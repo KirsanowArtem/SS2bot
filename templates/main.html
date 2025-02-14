@@ -252,6 +252,13 @@
             color: gray;
         }
 
+        #chat-avatar {
+            display: block !important;
+            visibility: visible !important;
+            width: 50px;
+            height: 50px;
+        }
+
         .input-container {
             display: flex;
             flex-direction: column;
@@ -420,6 +427,25 @@
                 });
         }
 
+        function checkAvatar(userId) {
+            fetch(`/get_avatar/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.avatar) {
+                        console.log("Аватар загружен:", data.avatar);
+                        document.getElementById('chat-avatar').src = data.avatar;
+                    } else {
+                        console.log("Аватар не найден, используем стандартное изображение.");
+                        document.getElementById('chat-avatar').src = "/static/DefaultAvatar.png";
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка получения аватара:", error);
+                    document.getElementById('chat-avatar').src = "/static/DefaultAvatar.png";
+                });
+        }
+
+
         function openChat(userId, secondName, username) {
             console.log("openChat пользователя: " + secondName);
             console.log("Открытие деталей пользователя: " + secondName);
@@ -436,6 +462,14 @@
             document.getElementById('chat-username').innerText = secondName;
             document.getElementById('chat-name').innerText = username;
             document.getElementById('chat-avatar').src = `https://www.example.com/avatar/${userId}`;
+            console.log(`Avatar URL: https://www.example.com/avatar/${userId}`);
+            console.log(document.getElementById('chat-avatar').src);
+            window.onload = function() {
+                document.getElementById('chat-avatar').src = `https://www.example.com/avatar/${userId}`;
+            };
+
+            checkAvatar(userId);
+
 
             // Загрузка и отображение сообщений
             getChatMessages(userId).then(messages => {

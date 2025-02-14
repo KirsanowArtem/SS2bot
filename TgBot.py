@@ -62,6 +62,92 @@ VALID_PASSWORD_HASH = hashlib.sha256("12".encode()).hexdigest()
 
 
 
+
+
+with open(DATA_FILE, "r") as file:
+    config = json.load(file)
+
+def get_current_time_kiev():
+    kiev_tz = pytz.timezone('Europe/Kiev')
+    now = datetime.now(kiev_tz)
+    return now.strftime("%H:%M; %d/%m/%Y")
+
+def save_data(data):
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+def load_sent_messages():
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data.get("sent_messages", {})
+
+def save_sent_messages(sent_messages):
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    data["sent_messages"] = sent_messages
+    with open(DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+def load_muted_users_from_file(file_path=DATA_FILE):
+    with open(file_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    muted_users = {}
+    for user in data.get("users", []):
+        if user.get("mute", False):
+            mute_end = user.get("mute_end")
+            if mute_end:
+                mute_end = datetime.strptime(mute_end, "%H:%M; %d/%m/%Y")
+            muted_users[user["id"]] = {
+                "first_name": user.get("first_name"),
+                "second_name": user.get("second_name"),
+                "username": user.get("username"),
+                "expiration": mute_end,
+                "reason": user.get("reason")
+            }
+    return muted_users
+
+def load_users_info(json_file=DATA_FILE):
+    try:
+        with open(json_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get("users", [])
+    except FileNotFoundError:
+        print(f"Помилка: Файл '{json_file}' не знайден.")
+        return []
+    except json.JSONDecodeError:
+        print("Помилка: некорректний формат JSON.")
+        return []
+
+def load_chat_id_from_file(file_path=DATA_FILE):
+    with open(file_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    chat_id = data.get("chat_id")
+    return chat_id
+
+def load_bottocen_from_file(file_path=DATA_FILE):
+    with open(file_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    bot_token = data.get("bot_token")
+    return bot_token
+
+def update_data_json(data):
+    with open(DATA_FILE, "w") as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
+
+
+users_info = load_users_info()
+muted_users = load_muted_users_from_file()
+
+CREATOR_CHAT_ID = load_chat_id_from_file()
+BOTTOCEN = load_bottocen_from_file()
+
+
+
+
+
 def load_users(file_path=DATA_FILE):
     """Загружает пользователей и формирует список с доп. инфо."""
     data = load_data(file_path)
@@ -298,8 +384,23 @@ def send_message_route():
         return jsonify({"error": f"Ошибка сервера: {str(e)}"}), 500
 
 
+TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOTTOCEN}"
 
+def get_avatar(user_id):
+    response = requests.get(f"{TELEGRAM_API_URL}/getUserProfilePhotos", params={"user_id": user_id})
+    data = response.json()
 
+    if data["ok"] and data["result"]["total_count"] > 0:
+        file_id = data["result"]["photos"][0][0]["file_id"]  # Берем первый файл
+        file_path = requests.get(f"{TELEGRAM_API_URL}/getFile", params={"file_id": file_id}).json()["result"]["file_path"]
+        return f"https://api.telegram.org/file/bot{BOTTOCEN}/{file_path}"
+
+    return "/static/DefaultAvatar.png"  # Возвращаем дефолтный, если фото нет
+
+@app.route("/get_avatar/<int:user_id>")
+def avatar(user_id):
+    avatar_url = get_avatar(user_id)  # Функция выше
+    return jsonify({"avatar": avatar_url})
 
 
 def run_flask():
@@ -325,85 +426,6 @@ def run_flask():
 
 
 
-with open(DATA_FILE, "r") as file:
-    config = json.load(file)
-
-def get_current_time_kiev():
-    kiev_tz = pytz.timezone('Europe/Kiev')
-    now = datetime.now(kiev_tz)
-    return now.strftime("%H:%M; %d/%m/%Y")
-
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
-def load_sent_messages():
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
-        data = json.load(file)
-    return data.get("sent_messages", {})
-
-def save_sent_messages(sent_messages):
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
-        data = json.load(file)
-    data["sent_messages"] = sent_messages
-    with open(DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
-
-def load_muted_users_from_file(file_path=DATA_FILE):
-    with open(file_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    muted_users = {}
-    for user in data.get("users", []):
-        if user.get("mute", False):
-            mute_end = user.get("mute_end")
-            if mute_end:
-                mute_end = datetime.strptime(mute_end, "%H:%M; %d/%m/%Y")
-            muted_users[user["id"]] = {
-                "first_name": user.get("first_name"),
-                "second_name": user.get("second_name"),
-                "username": user.get("username"),
-                "expiration": mute_end,
-                "reason": user.get("reason")
-            }
-    return muted_users
-
-def load_users_info(json_file=DATA_FILE):
-    try:
-        with open(json_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return data.get("users", [])
-    except FileNotFoundError:
-        print(f"Помилка: Файл '{json_file}' не знайден.")
-        return []
-    except json.JSONDecodeError:
-        print("Помилка: некорректний формат JSON.")
-        return []
-
-def load_chat_id_from_file(file_path=DATA_FILE):
-    with open(file_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    chat_id = data.get("chat_id")
-    return chat_id
-
-def load_bottocen_from_file(file_path=DATA_FILE):
-    with open(file_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    bot_token = data.get("bot_token")
-    return bot_token
-
-def update_data_json(data):
-    with open(DATA_FILE, "w") as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
-
-
-users_info = load_users_info()
-muted_users = load_muted_users_from_file()
-
-CREATOR_CHAT_ID = load_chat_id_from_file()
-BOTTOCEN = load_bottocen_from_file()
 
 
 
