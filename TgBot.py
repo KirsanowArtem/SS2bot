@@ -249,7 +249,8 @@ def index():
     users = data['users']
     total_users = len(users)
     avg_rating = sum(user['rating'] for user in users) / total_users if total_users > 0 else 0
-    return render_template("main.html", users=users, total_users=total_users, avg_rating=avg_rating)
+    avatars = get_all_avatars(users)
+    return render_template("main.html", users=users, avatars=avatars, total_users=len(users), avg_rating=10)
 
 
 @app.route('/update_name', methods=['POST'])
@@ -387,20 +388,39 @@ def send_message_route():
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOTTOCEN}"
 
 def get_avatar(user_id):
+    """ Получаем аватар пользователя или дефолтное изображение. """
     response = requests.get(f"{TELEGRAM_API_URL}/getUserProfilePhotos", params={"user_id": user_id})
     data = response.json()
 
     if data["ok"] and data["result"]["total_count"] > 0:
-        file_id = data["result"]["photos"][0][0]["file_id"]  # Берем первый файл
+        file_id = data["result"]["photos"][0][0]["file_id"]
         file_path = requests.get(f"{TELEGRAM_API_URL}/getFile", params={"file_id": file_id}).json()["result"]["file_path"]
         return f"https://api.telegram.org/file/bot{BOTTOCEN}/{file_path}"
 
-    return "/static/DefaultAvatar.png"  # Возвращаем дефолтный, если фото нет
+    return "/static/DefaultAvatar.png"
+
+def get_all_avatars(users):
+    """ Получаем аватары для всех пользователей """
+    avatars = {}
+    for user in users:
+        avatars[user["id"]] = get_avatar(user["id"])
+    return avatars
 
 @app.route("/get_avatar/<int:user_id>")
 def avatar(user_id):
     avatar_url = get_avatar(user_id)  # Функция выше
     return jsonify({"avatar": avatar_url})
+
+
+@app.route("/users")
+def users_list():
+    chats_data = load_chats()
+
+    users = chats_data["users"]
+    print(users)
+    avatars = get_all_avatars(users)  # Получаем аватары сразу для всех
+
+    return render_template("users.html", users=users, avatars=avatars)
 
 
 def run_flask():

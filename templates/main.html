@@ -303,22 +303,24 @@
     <div id="user-list-container" class="user-list-container">
         {% for user in users %}
         <div class="user-card" onclick="openUserDetail('{{ user['username'] }}', '{{ user['second_name'] }}', '{{ user['id'] }}')">
-            <div class="user-rating-container">
-                <div class="user-rating">Рейтинг: {{ user['rating'] }}</div>
-            </div>
             <div class="user-info">
-                <img src="https://www.example.com/avatar/{{ user['id'] }}" alt="Avatar" width="50" height="50">
+                <img src="{{ avatars[user['id']] }}" alt="Avatar" width="50" height="50">
                 <div>
                     <div class="user-name" id="name_{{ user['id'] }}">
                         {{ user['second_name'] }}
                         <span class="edit-name" onclick="editName('{{ user['id'] }}', '{{ user['second_name'] }}', event)">✏️</span>
                     </div>
                     <div class="user-status">{{ user['username'] }}</div>
+
                     <div class="mute-info">
                         {% if user['mute_end'] != 'None' %}
                             Мут до: {{ user['mute_end'] }}
                         {% endif %}
                     </div>
+
+                    <!-- Рейтинг теперь под именем или под окончанием мута -->
+                    <div class="user-rating">Рейтинг: {{ user['rating'] }}</div>
+
                     <!-- Кнопка для чата -->
                     <button class="chat-button" onclick="openChat('{{ user['id'] }}', '{{ user['second_name'] }}', '{{ user['username'] }}')">Чат</button>
                 </div>
@@ -326,6 +328,8 @@
         </div>
         {% endfor %}
     </div>
+
+
 
 <!-- Контейнер чата -->
 <div id="chat-container" class="chat-container">
@@ -380,6 +384,7 @@
         function openUserDetail(username, secondName, userId) {
             // При нажатии на контейнер пользователя
             console.log("Открытие деталей пользователя: " + secondName);
+            openChat(userId, secondName, username);
         }
 
 
