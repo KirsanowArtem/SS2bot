@@ -76,6 +76,53 @@
             max-height: calc(100% - 120px); /* Оставляем место для ввода и заголовка */
             overflow-y: auto; /* Прокрутка */
         }
+        .chat-input-container {
+            position: absolute;
+            bottom: 20px; /* Отступ от низа чата */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            min-height: 50px;
+            max-height: 120px;
+            resize: none;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #007bff;
+        }
+
+        .send-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .send-button:hover {
+            background: #0056b3;
+        }
+
+
 
         /* Индивидуальное сообщение */
         .message {
@@ -89,26 +136,35 @@
         }
 
             /* Стиль для отображения даты */
-    .date-divider {
-        text-align: center;
-        margin: 10px 0;
-    }
+        .date-divider {
+            text-align: center;
+            margin: 10px 0;
+        }
 
-    .date {
-        background-color: green;
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 16px;
-    }
+        .date {
+            background-color: green;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-    /* Для времени сообщения */
-    .message-time {
-        text-align: right;
-        color: gray;
-        font-size: 12px;
-    }
+        /* Для времени сообщения */
+        .message-time {
+            text-align: right;
+            color: gray;
+            font-size: 12px;
+        }
+
+        /* Сообщения SupportBot */
+        .message.support {
+            background-color: orange;
+            align-self: flex-end; /* Смещаем вправо */
+            color: white;
+        }
+
+
 
         .edit-name {
             cursor: pointer;
@@ -146,7 +202,7 @@
             position: fixed;
             top: 0;
             right: -350px;
-            width: 350px;
+            width: 500px;
             height: 90vh; /* Полная высота экрана */
             background-color: #ffffff;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
@@ -279,10 +335,11 @@
         <!-- Сообщения будут добавляться сюда -->
     </div>
 
-    <form method="POST" action="/send_message">
-        <textarea name="message" placeholder="Введите ваше сообщение"></textarea>
-        <button type="submit">Отправить</button>
+    <form method="POST" action="/send_message" class="chat-input-container">
+        <textarea name="message" class="chat-input" placeholder="Введите ваше сообщение"></textarea>
+        <button type="submit" class="send-button">Отправить</button>
     </form>
+
 </div>
 
 
@@ -400,14 +457,24 @@
 
                     const messageElement = document.createElement('div');
                     messageElement.classList.add('message');
+
+                    // Добавляем стиль для сообщений от SupportBot
+                    if (message.username === "SupportBot") {
+                        messageElement.classList.add('support');
+                    }
+
                     messageElement.innerHTML = `
                         <strong>${message.username}</strong>: ${message.message}
                         <div style="text-align: right; font-size: 12px; color: gray;">${formatTime(message.time_sent)}</div>
                     `;
                     chatMessagesContainer.appendChild(messageElement);
                 });
+                // Прокручиваем вниз после загрузки сообщений
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
             });
         }
+
 
         function sendMessage() {
             const message = document.getElementById('chat-input').value;
@@ -419,6 +486,26 @@
                 // Например, мы можем добавить сообщение в localStorage или отправить на сервер
             }
         }
+
+        function renderMessage(message) {
+            let chatMessages = document.getElementById("chat-messages");
+
+            let messageDiv = document.createElement("div");
+            messageDiv.classList.add("message");
+
+            if (message.username === "SupportBot") {
+                messageDiv.classList.add("support"); // Оранжевый стиль
+                messageDiv.style.alignSelf = "flex-end"; // Размещение справа
+            }
+
+            messageDiv.innerHTML = `
+                <div>${message.message}</div>
+                <div class="message-time">${formatTime(message.time_sent)}</div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+        }
+
 
         // Обработка нажатия кнопки ESC для закрытия чата
         document.addEventListener('keydown', function(event) {
