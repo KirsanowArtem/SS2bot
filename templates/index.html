@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поддержка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            background: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            text-align: left;
+        }
+        .main-container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .logout-form {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .logout-form button {
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #333;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    {% if not logged_in %}
+        <!-- Форма входа -->
+        <div class="login-container">
+            <h2>Вход</h2>
+            <form method="POST">
+                <input type="text" name="username" placeholder="Логин" required>
+                <input type="password" name="password" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Основной контент -->
+        <form class="logout-form" method="POST" action="/logout">
+            <button type="submit">Выйти</button>
+        </form>
+
+        <div class="container">
+            <div class="sidebar">
+                <h3>Статистика</h3>
+                <p>👤 Пользователей: <span id="users_count">{{ stats.users_count }}</span></p>
+                <p>⭐ Средняя оценка: <span id="average_rating">{{ stats.average_rating }}</span></p>
+            </div>
+
+            <div class="main-container">
+                <h2>Основной контент</h2>
+                <p>Здесь можно добавить чат или другую информацию.</p>
+            </div>
+        </div>
+    {% endif %}
+
+</body>
+</html>

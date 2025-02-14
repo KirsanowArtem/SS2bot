@@ -1,0 +1,64 @@
+{
+    "users": [
+        {
+            "id": "1840233118",
+            "first_name": "Artem",
+            "second_name": "рп",
+            "username": "ArtemKirss",
+            "join_date": "17:01; 09/01/2025",
+            "rating": 5,
+            "mute": false,
+            "mute_end": "None",
+            "reason": null
+        },
+        {
+            "id": "5708855619",
+            "first_name": "Dmitry",
+            "second_name": "аав",
+            "username": "Kirsanov_Dmitrij",
+            "join_date": "11:18; 13/01/2025",
+            "rating": 5,
+            "mute": true,
+            "mute_end": "10:13; 31/01/2025",
+            "reason": "По рішенню адміністратора"
+        },
+        {
+            "id": "1013802830",
+            "first_name": "Р“Р»РµР±",
+            "second_name": "па",
+            "username": "RavaNay",
+            "join_date": "19:50; 18/01/2025",
+            "rating": 5,
+            "mute": false,
+            "mute_end": "None",
+            "reason": null
+        }
+    ],
+    "muted_users": {
+        "Kirsanov_Dmitrij": true
+    },
+    "admins": [],
+    "programmers": [
+        "ArtemKirss"
+    ],
+    "bot_token": "7677888606:AAHMm3aSt84ZQkJ0wrlH4__St3lW36-TL8g",
+    "owner_id": "1840233118",
+    "chat_id": "-1002445665573",
+    "total_score": 15.0,
+    "num_of_ratings": 3,
+    "sent_messages": {
+        "13": 1840233118,
+        "147": 1840233118,
+        "14": 1840233118,
+        "16": 1840233118,
+        "154": 1840233118,
+        "17": 1840233118,
+        "179": 1840233118,
+        "18": 1840233118,
+        "185": 1840233118,
+        "19": 1840233118,
+        "196": 1840233118,
+        "20": 1840233118,
+        "200": 1840233118
+    }
+}
