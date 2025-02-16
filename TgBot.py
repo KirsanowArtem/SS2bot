@@ -19,6 +19,9 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKe
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext, ContextTypes
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify #Убрать  SocketIO ----------------------
+import hashlib
+import json
 import hashlib
 
 from aiocron import crontab
@@ -44,9 +47,7 @@ EXCEL_FILE = "user_data_export.xlsx"
 application = None
 
 app = Flask(__name__)
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import hashlib
-import json
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Ключ для сессий
@@ -421,6 +422,15 @@ def users_list():
     avatars = get_all_avatars(users)  # Получаем аватары сразу для всех
 
     return render_template("users.html", users=users, avatars=avatars)
+
+
+
+
+
+
+
+
+
 
 
 def run_flask():

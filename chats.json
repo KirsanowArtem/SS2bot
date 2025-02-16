@@ -37,6 +37,156 @@
                 "username": "SupportBot",
                 "message": "прв",
                 "time_sent": "22:07; 14/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "лро",
+                "time_sent": "10:45; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ьр",
+                "time_sent": "10:47; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "орп",
+                "time_sent": "10:50; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ен",
+                "time_sent": "10:51; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ььм",
+                "time_sent": "10:53; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "рсп",
+                "time_sent": "10:53; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ке",
+                "time_sent": "10:55; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ра",
+                "time_sent": "10:58; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ап",
+                "time_sent": "12:41; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:41; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "п",
+                "time_sent": "12:41; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:41; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:41; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "п",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "х",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ь",
+                "time_sent": "12:42; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "k",
+                "time_sent": "13:20; 15/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "k",
+                "time_sent": "13:20; 15/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "л",
+                "time_sent": "12:26; 16/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "ге",
+                "time_sent": "12:26; 16/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "гн",
+                "time_sent": "12:26; 16/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "п",
+                "time_sent": "12:29; 16/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "мой код:\n\nfunction openChat(userId, secondName, username) {\n            console.log(\"openChat пользователя: \" + secondName);\n            console.log(\"Открытие деталей пользователя: \" + secondName);\n\n            const chatContainer = document.getElementById('chat-container');\n            const userListContainer = document.getElementById('user-list-container');\n\n            // Перемещаем список пользователей влево\n            userListContainer.style.marginRight = '350px';\n\n            // Открываем чат\n            chatContainer.classList.add('open');\n\n            document.getElementById('chat-username').innerText = secondName;\n            document.getElementById('chat-name').innerText = username;\n            document.getElementById('chat-id').innerText = userId;\n            document.getElementById('chat-avatar').src = `https://www.example.com/avatar/${userId}`;\n            console.log(Avatar URL: https://www.example.com/avatar/${userId});\n            console.log(document.getElementById('chat-avatar').src);\n            window.onload = function() {\n                document.getElementById('chat-avatar').src = `https://www.example.com/avatar/${userId}`;\n            };\n\n            checkAvatar(userId);\n\n\n            // Загрузка и отображение сообщений\n            getChatMessages(userId).then(messages => {\n                const chatMessagesContainer = document.getElementById('chat-messages');\n                chatMessagesContainer.innerHTML = ''; // Очищаем контейнер перед добавлением новых сообщений\n\n                let lastMessageDate = '';\n                messages.forEach(message => {\n                    const messageDate = formatDate(message.time_sent);\n\n                    // Если дата сообщения отличается от предыдущей, показываем её\n                    if (messageDate !== lastMessageDate) {\n                        const dateElement = document.createElement('div');\n                        dateElement.classList.add('message-date');\n                        dateElement.innerHTML = <div style=\"background-color: green; color: white; text-align: center; padding: 5px; border-radius: 10px;\">${messageDate}</div>;\n                        chatMessagesContainer.appendChild(dateElement);\n                        lastMessageDate = messageDate;\n                    }\n\n                    const messageElement = document.createElement('div');\n                    messageElement.classList.add('message');\n\n                    // Добавляем стиль для сообщений от SupportBot\n                    if (message.username === \"SupportBot\") {\n                        messageElement.classList.add('support');\n                    }\n\n                    messageElement.innerHTML = `\n                        <strong>${message.username}</strong>: ${message.message}\n                        <div style=\"text-align: right; font-size: 12px; color: gray;\">${formatTime(message.time_sent)}</div>\n                    `;\n                    chatMessagesContainer.appendChild(messageElement);\n                });\n                // Прокручиваем вниз после загрузки сообщений\n                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;\n\n            });\n        }\n\nмне нужно сделать так чтобы этот чат обновлялся каждую секунду",
+                "time_sent": "12:29; 16/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "пэ",
+                "time_sent": "12:29; 16/02/2025"
             }
         ]
     },

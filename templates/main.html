@@ -73,7 +73,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px; /* Добавляем отступ между сообщениями */
-            max-height: calc(100% - 120px); /* Оставляем место для ввода и заголовка */
+            max-height: calc(100% - 190px); /* Оставляем место для ввода и заголовка */
             overflow-y: auto; /* Прокрутка */
         }
         .chat-input-container {
@@ -203,7 +203,7 @@
             top: 0;
             right: -350px;
             width: 500px;
-            height: 90vh; /* Полная высота экрана */
+            height: 95vh; /* Полная высота экрана */
             background-color: #ffffff;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
             transition: right 0.3s;
@@ -211,6 +211,7 @@
             z-index: 1000;
             border-radius: 12px 0 0 12px;
             display: none; /* Скрываем чат по умолчанию */
+            flex-direction: column;
             overflow-y: auto; /* Добавим прокрутку по вертикали */
         }
 
@@ -248,6 +249,11 @@
         }
 
         .chat-username {
+            font-size: 16px;
+            color: gray;
+        }
+
+        .chat-id {
             font-size: 16px;
             color: gray;
         }
@@ -338,6 +344,7 @@
         <div id="chat-info" class="chat-info">
             <div id="chat-username" class="username"></div>
             <div id="chat-name" class="name"></div>
+            <div id="chat-id" class="id"></div>
         </div>
     </div>
 
@@ -358,7 +365,6 @@
         function editName(userId, currentName, event) {
             // Чтобы не перехватывать клик на кнопке
             event.stopPropagation();
-
             const newName = prompt("Введите новое имя для пользователя: " + currentName, currentName);
             if (newName && newName !== currentName) {
                 // Отправляем запрос на сервер для обновления имени пользователя
@@ -466,6 +472,7 @@
 
             document.getElementById('chat-username').innerText = secondName;
             document.getElementById('chat-name').innerText = username;
+            document.getElementById('chat-id').innerText = userId;
             document.getElementById('chat-avatar').src = `https://www.example.com/avatar/${userId}`;
             console.log(`Avatar URL: https://www.example.com/avatar/${userId}`);
             console.log(document.getElementById('chat-avatar').src);
@@ -514,38 +521,6 @@
             });
         }
 
-
-        function sendMessage() {
-            const message = document.getElementById('chat-input').value;
-            if (message) {
-                console.log("Отправлено сообщение: " + message);
-                document.getElementById('chat-input').value = ''; // Очистить поле ввода
-
-                // Здесь нужно отправить сообщение на сервер и обновить чат
-                // Например, мы можем добавить сообщение в localStorage или отправить на сервер
-            }
-        }
-
-        function renderMessage(message) {
-            let chatMessages = document.getElementById("chat-messages");
-
-            let messageDiv = document.createElement("div");
-            messageDiv.classList.add("message");
-
-            if (message.username === "SupportBot") {
-                messageDiv.classList.add("support"); // Оранжевый стиль
-                messageDiv.style.alignSelf = "flex-end"; // Размещение справа
-            }
-
-            messageDiv.innerHTML = `
-                <div>${message.message}</div>
-                <div class="message-time">${formatTime(message.time_sent)}</div>
-            `;
-
-            chatMessages.appendChild(messageDiv);
-        }
-
-
         // Обработка нажатия кнопки ESC для закрытия чата
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
@@ -564,10 +539,13 @@
             }
 
             sendButton.addEventListener("click", function (event) {
+                const name = document.getElementById('chat-username').textContent.trim();
+                const username = document.getElementById('chat-name').textContent.trim();
+                const chatId = document.getElementById('chat-id').textContent.trim();
                 event.preventDefault(); // Отключаем переход на другую страницу
 
                 const message = inputField.value.trim();
-                const username = document.querySelector("#chat-name").textContent.trim();
+
 
                 if (message === "" || username === "") {
                     console.error("Ошибка: отсутствует сообщение или имя пользователя.");
@@ -592,6 +570,10 @@
                 .catch(error => console.error("Ошибка:", error));
 
                 inputField.value = ""; // Очищаем поле ввода
+                console.log(`chatId ${chatId}`);
+                console.log(`username ${username}`);
+                console.log(`name ${name}`);
+                openChat(chatId, username, name)
             });
         });
 
@@ -602,33 +584,64 @@
 
 
 
-        function sendMessageToBot(username, message) {
-            console.log(`Сообщение для ${username}`);
-            fetch("https://api.telegram.org/bot<TOKEN>/sendMessage", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    chat_id: username, // ID пользователя
-                    text: message
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    console.log(`Сообщение отправлено пользователю ${username}`);
-                } else {
-                    console.error("Ошибка при отправке:", data);
-                }
-            })
-            .catch(error => console.error("Ошибка запроса:", error));
-        }
 
-        function sendMessageToUser(username, message) {
-            console.log(`Отправка сообщения "${message}" пользователю ${username}`);
-            // Здесь добавь код для отправки сообщения боту
-        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const chatForm = document.querySelector(".chat-input-container");
+            const chatMessages = document.getElementById("chat-messages");
+
+            chatForm.addEventListener("submit", function (event) {
+                event.preventDefault(); // Останавливаем стандартную отправку формы
+
+                const formData = new FormData(chatForm); // Получаем данные формы
+                fetch("/send_message", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json()) // Ожидаем JSON-ответ от сервера
+                .then(data => {
+                    if (data.success) {
+                        chatForm.reset(); // Очищаем поле ввода
+                        updateChat(); // Обновляем чат
+                    } else {
+                        alert("Ошибка отправки сообщения!");
+                    }
+                })
+                .catch(error => console.error("Ошибка запроса:", error));
+            });
+
+            function updateChat() {
+                fetch("/get_chat_messages") // Получаем новые сообщения
+                .then(response => response.json())
+                .then(data => {
+                    chatMessages.innerHTML = ""; // Очищаем чат перед обновлением
+
+                    data.messages.forEach(msg => {
+                        const messageDiv = document.createElement("div");
+                        messageDiv.classList.add("message");
+                        messageDiv.innerHTML = `<b>${msg.sender}:</b> ${msg.text} <div class="message-time">${msg.time}</div>`;
+                        chatMessages.appendChild(messageDiv);
+                    });
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight; // Прокручиваем вниз
+                })
+                .catch(error => console.error("Ошибка обновления чата:", error));
+            }
+        });
+
+        const socket = io("http://127.0.0.1:5000", {
+            query: { user_id: currentUserId }  // Передаем user_id при подключении
+        });
+
+        socket.on("new_message", (data) => {
+            console.log("Новое сообщение от", data.user_id);
+
+            // Если открыта вкладка с этим пользователем, обновляем чат
+            if (currentOpenChat === data.user_id) {
+                openChat(data.user_id, currentSecondName, currentUsername);
+            }
+        });
 
     </script>
 </body>
