@@ -65,7 +65,7 @@ VALID_PASSWORD_HASH = hashlib.sha256("12".encode()).hexdigest()
 
 
 
-with open(DATA_FILE, "r") as file:
+with open(DATA_FILE, "r", encoding="utf-8") as file:
     config = json.load(file)
 
 def get_current_time_kiev():

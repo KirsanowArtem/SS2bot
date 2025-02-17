@@ -3,7 +3,7 @@
         {
             "id": "1840233118",
             "first_name": "Artem",
-            "second_name": "Артем",
+            "second_name": "РђСЂС‚РµРј",
             "username": "ArtemKirss",
             "join_date": "17:01; 09/01/2025",
             "rating": 5,
@@ -14,23 +14,34 @@
         {
             "id": "5708855619",
             "first_name": "Dmitry",
-            "second_name": "Дима",
+            "second_name": "Р”РёРјР°",
             "username": "Kirsanov_Dmitrij",
             "join_date": "11:18; 13/01/2025",
             "rating": 5,
             "mute": true,
             "mute_end": "10:13; 31/01/2025",
-            "reason": "По рішенню адміністратора"
+            "reason": "РџРѕ СЂС–С€РµРЅРЅСЋ Р°РґРјС–РЅС–СЃС‚СЂР°С‚РѕСЂР°"
         },
         {
             "id": "1013802830",
-            "first_name": "Р“Р»РµР±",
-            "second_name": "Глеб",
+            "first_name": "Р вЂњР В»Р ВµР В±",
+            "second_name": "Р“Р»РµР±",
             "username": "RavaNay",
             "join_date": "19:50; 18/01/2025",
             "rating": 5,
             "mute": false,
             "mute_end": "None",
+            "reason": null
+        },
+        {
+            "id": "6222116355",
+            "username": "Не_вказано",
+            "first_name": "alex popov",
+            "second_name": "alex popov",
+            "join_date": "11:23; 17/02/2025",
+            "rating": 0,
+            "mute": false,
+            "mute_end": null,
             "reason": null
         }
     ],
