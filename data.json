@@ -3,7 +3,7 @@
         {
             "id": "1840233118",
             "first_name": "Artem",
-            "second_name": "РђСЂС‚РµРј",
+            "second_name": "Артем",
             "username": "ArtemKirss",
             "join_date": "17:01; 09/01/2025",
             "rating": 5,
@@ -14,7 +14,7 @@
         {
             "id": "5708855619",
             "first_name": "Dmitry",
-            "second_name": "Р”РёРјР°",
+            "second_name": "Димка",
             "username": "Kirsanov_Dmitrij",
             "join_date": "11:18; 13/01/2025",
             "rating": 5,
@@ -25,7 +25,7 @@
         {
             "id": "1013802830",
             "first_name": "Р вЂњР В»Р ВµР В±",
-            "second_name": "Р“Р»РµР±",
+            "second_name": "Глеб",
             "username": "RavaNay",
             "join_date": "19:50; 18/01/2025",
             "rating": 5,
@@ -43,6 +43,39 @@
             "mute": false,
             "mute_end": null,
             "reason": null
+        },
+        {
+            "id": "698846573",
+            "username": "Не вказано",
+            "first_name": "SanStroy",
+            "second_name": "Саня",
+            "join_date": "14:29; 18/02/2025",
+            "rating": 5.0,
+            "mute": false,
+            "mute_end": null,
+            "reason": null
+        },
+        {
+            "id": "1681126166",
+            "username": "chellolik",
+            "first_name": "BLACKHAWK",
+            "second_name": "BLACKHAWK",
+            "join_date": "18:50; 25/02/2025",
+            "rating": 0,
+            "mute": false,
+            "mute_end": null,
+            "reason": null
+        },
+        {
+            "id": "2133347662",
+            "username": "DenProc2010",
+            "first_name": "Денис",
+            "second_name": "Денис",
+            "join_date": "20:01; 28/02/2025",
+            "rating": 0,
+            "mute": false,
+            "mute_end": null,
+            "reason": null
         }
     ],
     "muted_users": {
@@ -55,8 +88,8 @@
     "bot_token": "7677888606:AAHMm3aSt84ZQkJ0wrlH4__St3lW36-TL8g",
     "owner_id": "1840233118",
     "chat_id": "-1002445665573",
-    "total_score": 15.0,
-    "num_of_ratings": 3,
+    "total_score": 20.0,
+    "num_of_ratings": 4,
     "sent_messages": {
         "13": 1840233118,
         "147": 1840233118,

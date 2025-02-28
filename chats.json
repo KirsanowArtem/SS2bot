@@ -3,210 +3,155 @@
         "username": "ArtemKirss",
         "messages": [
             {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "00:00; 01/01/2025",
+                "read": true
+            },
+            {
                 "user_id": 1840233118,
                 "username": "ArtemKirss",
                 "message": "ож",
-                "time_sent": "15:34; 11/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "gd",
-                "time_sent": "19:58; 14/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "только если сюда писать будеш каждый раз пиши /message так как бот может не сработать и не считать сообшение",
-                "time_sent": "11:55; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "им",
-                "time_sent": "11:57; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "пп",
-                "time_sent": "12:00; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "пп",
-                "time_sent": "12:00; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "пп",
-                "time_sent": "12:00; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "пп",
-                "time_sent": "12:00; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:01; 17/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "т",
-                "time_sent": "12:16; 17/02/2025"
+                "time_sent": "15:34; 11/02/2025",
+                "read": true
             },
             {
                 "username": "SupportBot",
                 "message": "о",
-                "time_sent": "12:16; 17/02/2025"
+                "time_sent": "23:30; 21/02/2025",
+                "read": false
             },
             {
                 "username": "SupportBot",
-                "message": "о",
-                "time_sent": "12:16; 17/02/2025"
+                "message": "нн",
+                "time_sent": "23:30; 21/02/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "не",
+                "time_sent": "23:30; 21/02/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "лоро",
+                "time_sent": "23:30; 21/02/2025",
+                "read": false
             },
             {
                 "username": "ArtemKirss",
                 "message": "о",
-                "time_sent": "12:18; 17/02/2025"
+                "time_sent": "23:45; 21/02/2025"
             },
             {
                 "username": "ArtemKirss",
-                "message": "п",
-                "time_sent": "12:18; 17/02/2025"
+                "message": "пававі",
+                "time_sent": "10:58; 22/02/2025"
             },
             {
-                "username": "ArtemKirss",
-                "message": "ы",
-                "time_sent": "12:18; 17/02/2025"
+                "username": "SupportBot",
+                "message": "хах",
+                "time_sent": "11:18; 22/02/2025",
+                "read": false
             },
             {
-                "username": "ArtemKirss",
-                "message": "оо",
-                "time_sent": "12:18; 17/02/2025"
+                "username": "SupportBot",
+                "message": "ж",
+                "time_sent": "11:18; 22/02/2025",
+                "read": false
             },
             {
-                "username": "ArtemKirss",
-                "message": "о",
-                "time_sent": "12:18; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "о",
-                "time_sent": "12:18; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
+                "username": "SupportBot",
                 "message": "а",
-                "time_sent": "12:18; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "ы",
-                "time_sent": "12:18; 17/02/2025"
+                "time_sent": "19:17; 22/02/2025",
+                "read": false
             },
             {
                 "username": "SupportBot",
-                "message": "ии",
-                "time_sent": "13:35; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "о",
-                "time_sent": "13:40; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "рк",
-                "time_sent": "17:28; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "let unreadMessages = {}; // Хранит количество непрочитанных сообщений для каждого пользователя\n\nfunction openChat(userId, secondName, username) {\n    console.log(\"Чат с пользователем \" + secondName + \" открыт.\");\n\n    fetch('/open_chat', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ user_id: userId })\n    });\n\n    const chatContainer = document.getElementById('chat-container');\n    chatContainer.classList.add('open');\n    document.getElementById('chat-username').innerText = username; // Фикс: username теперь в правильном месте\n    document.getElementById('chat-name').innerText = secondName; // Фикс: secondName в своем поле\n    document.getElementById('chat-id').innerText = userId;\n\n    function parseDate(dateString) {\n        const parts = dateString.split('; ');\n        if (parts.length !== 2) return new Date();\n        const [time, date] = parts;\n        const [day, month, year] = date.split('/');\n        return new Date(${year}-${month}-${day}T${time}:00);\n    }\n\n    function loadMessages() {\n        getChatMessages(userId).then(messages => {\n            const chatMessagesContainer = document.getElementById('chat-messages');\n            const isAtBottom = chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop <= chatMessagesContainer.clientHeight + 10;\n            chatMessagesContainer.innerHTML = '';\n\n            let lastDate = '';\n\n            messages.forEach(message => {\n                const messageDate = parseDate(message.time_sent);\n                const formattedDate = messageDate.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });\n                const formattedTime = messageDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });\n\n                // Разделение по датам\n                if (formattedDate !== lastDate) {\n                    const dateElement = document.createElement('div');\n                    dateElement.classList.add('date-separator');\n                    dateElement.innerText = formattedDate;\n                    chatMessagesContainer.appendChild(dateElement);\n                    lastDate = formattedDate;\n                }\n\n                const messageElement = document.createElement('div');\n                messageElement.classList.add('message');\n\n                if (message.username === \"SupportBot\") {\n                    messageElement.classList.add('support');\n                }\n\n                messageElement.innerHTML = `\n                    <strong>${message.username}</strong>: ${message.message}\n                    <div class=\"timestamp\">${formattedTime}</div>\n                `;\n                chatMessagesContainer.appendChild(messageElement);\n            });\n\n            if (isAtBottom) {\n                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;\n            }\n        });\n    }\n\n    loadMessages();\n\n    if (chatUpdateInterval) clearInterval(chatUpdateInterval);\n    chatUpdateInterval = setInterval(loadMessages, 1000);\n\n    unreadMessages[userId] = 0;\n    updateUnreadCount(userId);\n}\n\n// 📌 Обновляем счетчик непрочитанных сообщений\nfunction updateUnreadCount(userId, newMessages = 0) {\n    if (newMessages > 0) {\n        unreadMessages[userId] = (unreadMessages[userId] || 0) + newMessages;\n    } else {\n        unreadMessages[userId] = 0;\n    }\n\n    const userElement = document.getElementById(user-${userId});\n    if (userElement) {\n        const badge = userElement.querySelector('.unread-badge');\n        if (unreadMessages[userId] > 0) {\n            badge.innerText = unreadMessages[userId];\n            badge.style.display = 'block';\n        } else {\n            badge.style.display = 'none';\n        }\n    }\n}",
-                "time_sent": "17:28; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "// 📌 Добавляем индикатор сообщений в HTML\ndocument.querySelectorAll('.user-item').forEach(userElement => {\n    if (!userElement.querySelector('.unread-badge')) {\n        const badge = document.createElement('div');\n        badge.classList.add('unread-badge');\n        badge.style.display = 'none';\n        userElement.appendChild(badge);\n    }\n});",
-                "time_sent": "17:29; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "let unreadMessages = {}; // Хранит количество непрочитанных сообщений для каждого пользователя\n\nfunction openChat(userId, secondName, username) {\n    console.log(\"Чат с пользователем \" + secondName + \" открыт.\");\n\n    fetch('/open_chat', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ user_id: userId })\n    });\n\n    const chatContainer = document.getElementById('chat-container');\n    chatContainer.classList.add('open');\n    document.getElementById('chat-username').innerText = username; // Фикс: username теперь в правильном месте\n    document.getElementById('chat-name').innerText = secondName; // Фикс: secondName в своем поле\n    document.getElementById('chat-id').innerText = userId;\n\n    function parseDate(dateString) {\n        const parts = dateString.split('; ');\n        if (parts.length !== 2) return new Date();\n        const [time, date] = parts;\n        const [day, month, year] = date.split('/');\n        return new Date(${year}-${month}-${day}T${time}:00);\n    }\n\n    function loadMessages() {\n        getChatMessages(userId).then(messages => {\n            const chatMessagesContainer = document.getElementById('chat-messages');\n            const isAtBottom = chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop <= chatMessagesContainer.clientHeight + 10;\n            chatMessagesContainer.innerHTML = '';\n\n            let lastDate = '';\n\n            messages.forEach(message => {\n                const messageDate = parseDate(message.time_sent);\n                const formattedDate = messageDate.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });\n                const formattedTime = messageDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });\n\n                // Разделение по датам\n                if (formattedDate !== lastDate) {\n                    const dateElement = document.createElement('div');\n                    dateElement.classList.add('date-separator');\n                    dateElement.innerText = formattedDate;\n                    chatMessagesContainer.appendChild(dateElement);\n                    lastDate = formattedDate;\n                }\n\n                const messageElement = document.createElement('div');\n                messageElement.classList.add('message');\n\n                if (message.username === \"SupportBot\") {\n                    messageElement.classList.add('support');\n                }\n\n                messageElement.innerHTML = `\n                    <strong>${message.username}</strong>: ${message.message}\n                    <div class=\"timestamp\">${formattedTime}</div>\n                `;\n                chatMessagesContainer.appendChild(messageElement);\n            });\n\n            if (isAtBottom) {\n                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;\n            }\n        });\n    }\n\n    loadMessages();\n\n    if (chatUpdateInterval) clearInterval(chatUpdateInterval);\n    chatUpdateInterval = setInterval(loadMessages, 1000);\n\n    unreadMessages[userId] = 0;\n    updateUnreadCount(userId);\n}\n\n// 📌 Обновляем счетчик непрочитанных сообщений\nfunction updateUnreadCount(userId, newMessages = 0) {\n    if (newMessages > 0) {\n        unreadMessages[userId] = (unreadMessages[userId] || 0) + newMessages;\n    } else {\n        unreadMessages[userId] = 0;\n    }\n\n    const userElement = document.getElementById(user-${userId});\n    if (userElement) {\n        const badge = userElement.querySelector('.unread-badge');\n        if (unreadMessages[userId] > 0) {\n            badge.innerText = unreadMessages[userId];\n            badge.style.display = 'block';\n        } else {\n            badge.style.display = 'none';\n        }\n    }\n}",
-                "time_sent": "17:29; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "// 📌 Добавляем индикатор сообщений в HTML\ndocument.querySelectorAll('.user-item').forEach(userElement => {\n    if (!userElement.querySelector('.unread-badge')) {\n        const badge = document.createElement('div');\n        badge.classList.add('unread-badge');\n        badge.style.display = 'none';\n        userElement.appendChild(badge);\n    }\n});",
-                "time_sent": "17:29; 17/02/2025"
+                "message": "ееууеу",
+                "time_sent": "19:17; 22/02/2025",
+                "read": false
             },
             {
                 "username": "SupportBot",
-                "message": "рп",
-                "time_sent": "17:31; 17/02/2025"
+                "message": "435",
+                "time_sent": "09:01; 23/02/2025",
+                "read": false
             },
             {
-                "username": "ArtemKirss",
-                "message": "о",
-                "time_sent": "17:31; 17/02/2025"
+                "username": "SupportBot",
+                "message": "л",
+                "time_sent": "15:15; 24/02/2025",
+                "read": false
             },
             {
-                "username": "ArtemKirss",
+                "username": "SupportBot",
                 "message": "о",
-                "time_sent": "17:31; 17/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "о",
-                "time_sent": "17:31; 17/02/2025"
+                "time_sent": "15:15; 24/02/2025",
+                "read": false
             },
             {
                 "username": "ArtemKirss",
                 "message": "л",
-                "time_sent": "18:57; 17/02/2025"
+                "time_sent": "15:16; 24/02/2025"
             },
             {
                 "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "15:16; 24/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "жэ",
+                "time_sent": "15:16; 24/02/2025"
+            },
+            {
+                "username": "SupportBot",
                 "message": "л",
-                "time_sent": "18:57; 17/02/2025"
+                "time_sent": "15:16; 24/02/2025",
+                "read": false
             },
             {
                 "username": "ArtemKirss",
-                "message": "д",
-                "time_sent": "18:57; 17/02/2025"
+                "message": "хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх",
+                "time_sent": "16:34; 24/02/2025"
             },
             {
                 "username": "ArtemKirss",
-                "message": "д",
-                "time_sent": "18:58; 17/02/2025"
+                "message": "D:\\Programming\\Python\\SSbot\\.venv\\Scripts\\python.exe D:\\Programming\\Python\\SSbot\\Tt2.py \n * Serving Flask app 'Tt2'\n * Debug mode: off\nWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://192.168.31.105:5000\nPress CTRL+C to quit\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\nhttps://api.telegram.org/file/bot7677888606:AAHMm3aSt84ZQkJ0wrlH4__St3lW36-TL8g/photos/file_8.jpg\n=0=\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\n12\n{'1840233118': {'username': 'ArtemKirss', 'messages': [{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]}, '1013802830': {'username': 'RavaNay', 'messages': [{'username': 'RavaNay', 'message': 'оаоаоа', 'time_sent': '19:02; 13/02/2025', 'read': True}]}, '6222116355': {'username': 'Не вказано', 'messages': [{'username': 'немає імені користувача', 'message': 'А', 'time_sent': '11:23; 17/02/2025', 'read': True}]}, '698846573': {'username': 'Не вказано', 'messages': [{'username': 'немає імені користувача', 'message': 'Прикольный бот!', 'time_sent': '14:29; 18/02/2025', 'read': True}]}, '5708855619': {'username': 'SupportBot', 'messages': [{'username': 'SupportBot', 'message': 'ghbdtn', 'time_sent': '09:40; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'привет', 'time_sent': '09:40; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '14:25; 23/02/2025', 'read': False}]}}",
+                "time_sent": "16:34; 24/02/2025"
             },
             {
                 "username": "ArtemKirss",
-                "message": "е",
-                "time_sent": "18:58; 17/02/2025"
+                "message": "{'username': 'ArtemKirss', 'messages': [{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]}\n[{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]\n21\n127.0.0.1 - - [24/Feb/2025 16:34:26] \"POST /update_chat HTTP/1.1\" 200 -\n📩 Новое сообщение: {'username': 'ArtemKirss', 'message': 'хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх', 'time_sent': '16:34; 24/02/2025'}\n✅ Данные успешно отправлены на сайт",
+                "time_sent": "16:34; 24/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "Пдт",
+                "time_sent": "18:50; 25/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "Главное",
+                "time_sent": "08:59; 26/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "Перед каждым сообщением писать:\n/message",
+                "time_sent": "08:59; 26/02/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "Тут была цифра 1",
+                "time_sent": "08:59; 26/02/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "п",
+                "time_sent": "17:52; 28/02/2025",
+                "read": false
             }
         ]
     },
@@ -214,54 +159,64 @@
         "username": "RavaNay",
         "messages": [
             {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 12/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "оаоаоа",
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "оаоаоа",
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "оаоаоа",
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "оаоаоа",
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
+            },
+            {
                 "username": "RavaNay",
                 "message": "оаоаоа",
-                "time_sent": "19:02; 13/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "Привет",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "RavaNay",
-                "message": "Дароуа",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "Тебе пришло сообшение?",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "RavaNay",
-                "message": "да",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "ОООО",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "RavaNay",
-                "message": "Красавчик)",
-                "time_sent": "20:08; 14/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "я пишу с сайта но тут проблема в обновлении страницы",
-                "time_sent": "20:09; 14/02/2025"
-            },
-            {
-                "username": "SupportBot",
-                "message": "хош фото скину?",
-                "time_sent": "20:09; 14/02/2025"
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
             },
             {
                 "username": "RavaNay",
-                "message": "давай",
-                "time_sent": "20:09; 14/02/2025"
+                "message": "оаоаоа",
+                "time_sent": "19:02; 13/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "---",
+                "time_sent": "19:02; 14/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "000000",
+                "time_sent": "19:02; 15/02/2025",
+                "read": true
+            },
+            {
+                "username": "RavaNay",
+                "message": "66756565645576876776987879866455465487897567365873687566758327598749878775987487687657567648743898987575",
+                "time_sent": "19:02; 15/02/2025",
+                "read": true
             }
         ]
     },
@@ -271,32 +226,88 @@
             {
                 "username": "немає імені користувача",
                 "message": "А",
-                "time_sent": "11:23; 17/02/2025"
+                "time_sent": "11:23; 17/02/2025",
+                "read": true
+            }
+        ]
+    },
+    "698846573": {
+        "username": "Не вказано",
+        "messages": [
+            {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 17/02/2025",
+                "read": true
             },
             {
                 "username": "немає імені користувача",
-                "message": "Б",
-                "time_sent": "11:23; 17/02/2025"
+                "message": "Прикольный бот!",
+                "time_sent": "14:29; 18/02/2025",
+                "read": true
+            }
+        ]
+    },
+    "5708855619": {
+        "username": "SupportBot",
+        "messages": [
+            {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 22/02/2025",
+                "read": true
             },
             {
                 "username": "SupportBot",
-                "message": "кста привет",
-                "time_sent": "11:48; 17/02/2025"
+                "message": "ghbdtn",
+                "time_sent": "09:40; 23/02/2025",
+                "read": false
             },
             {
                 "username": "SupportBot",
-                "message": "я сейчас с сайта пишу",
-                "time_sent": "11:49; 17/02/2025"
+                "message": "привет",
+                "time_sent": "09:40; 23/02/2025",
+                "read": false
             },
             {
                 "username": "SupportBot",
-                "message": "правда бот не 24/7 работает",
-                "time_sent": "11:50; 17/02/2025"
+                "message": "о",
+                "time_sent": "14:25; 23/02/2025",
+                "read": false
+            }
+        ]
+    },
+    "1681126166": {
+        "username": "chellolik",
+        "messages": [
+            {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 25/02/2025",
+                "read": true
             },
             {
                 "username": "SupportBot",
-                "message": "только если сюда писать будеш каждый раз пиши /message так как бот может не сработать и не считать сообшение",
-                "time_sent": "11:54; 17/02/2025"
+                "message": "привет",
+                "time_sent": "21:01; 25/02/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "кстати если что то бот не всегда работает поетому некоторые твои сообшения могут не дойтти",
+                "time_sent": "21:10; 25/02/2025",
+                "read": false
+            }
+        ]
+    },
+    "2133347662": {
+        "username": "DenProc2010",
+        "messages": [
+            {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 28/02/2025",
+                "read": true
             }
         ]
     }

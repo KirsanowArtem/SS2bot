@@ -332,24 +332,25 @@ def get_user_id_by_username(username):
     return None  # Если пользователя не нашли
 
 def save_message_to_json(user_id, username, message):
-    """Добавляет сообщение в chats.json"""
+    """Добавляет сообщение в chats.json с флагом прочитанности"""
     chats_data = load_chats()
-
+    chat_id_str = str(user_id)
 
     new_message = {
         "username": username,
         "message": message,
-        "time_sent": datetime.now().strftime("%H:%M; %d/%m/%Y")
+        "time_sent": datetime.now().strftime("%H:%M; %d/%m/%Y"),
+        "read": False  # Добавляем статус "непрочитанное"
     }
-    chat_id_str=str(user_id)
 
+    # Если у пользователя еще нет сообщений, создаем список
+    if chat_id_str not in chats_data:
+        chats_data[chat_id_str] = {"username": username, "messages": []}
 
-    # Добавляем в список сообщений пользователя
-    #data["users"][str(user_id)]["messages"].append(new_message)
+    # Добавляем сообщение
     chats_data[chat_id_str]["messages"].append(new_message)
 
-
-    # Сохраняем изменения
+    # Сохраняем изменения в файл
     with open(CHATS_FILE, "w", encoding="utf-8") as file:
         json.dump(chats_data, file, ensure_ascii=False, indent=4)
 
@@ -424,9 +425,48 @@ def users_list():
     return render_template("users.html", users=users, avatars=avatars)
 
 
+unread_messages_data = {
+    "1840233118": 2,  # У пользователя с id=1 есть 2 непрочитанных сообщения
+    "6222116355": 5,  # У пользователя с id=2 есть 5 непрочитанных сообщений
+}
 
+@app.route('/check_unread_messages', methods=['GET'])
+def check_unread_messages():
+    return jsonify(unread_messages_data)  # Отправляем данные в JSON-формате
 
+@app.route("/mark_as_read", methods=["POST"])
+def mark_as_read():
+    """Помечает конкретное сообщение как прочитанное"""
+    data = request.json
+    user_id = str(data.get("user_id"))  # ID пользователя
+    message_time_sent = data.get("time_sent")  # Время сообщения
 
+    chats_data = load_chats()
+
+    if user_id in chats_data:
+        for message in chats_data[user_id]["messages"]:
+            if message["time_sent"] == message_time_sent:
+                message["read"] = True  # Помечаем как прочитанное
+                save_chats(chats_data)
+                return jsonify({"status": "ok", "message": "Сообщение помечено как прочитанное"}), 200
+
+    return jsonify({"status": "error", "message": "Сообщение не найдено"}), 404
+
+def get_unread_counts():
+    with open("chats.json", "r", encoding="utf-8") as file:
+        messages = json.load(file)
+
+    unread_counts = {}
+    for msg in messages:
+        user_id = msg["user_id"]  # Используем ID пользователя
+        if not msg["read"]:
+            unread_counts[user_id] = unread_counts.get(user_id, 0) + 1
+
+    return unread_counts
+
+@app.route("/get_unread_counts")
+def unread_counts():
+    return jsonify(get_unread_counts())
 
 
 

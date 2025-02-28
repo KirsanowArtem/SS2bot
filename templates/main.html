@@ -329,22 +329,41 @@
             background-color: #007bb5;
         }
 
-        .unread-badge {
+        .user-card {
+            position: relative; /* Для правильного позиционирования индикатора */
+        }
+
+        .unread-indicator {
             position: absolute;
-            top: 10px;
-            left: 50px; /* Позиция рядом с аватаром */
-            background: red;
+            top: 50%;
+            right: 60px; /* Сдвиг вправо */
+            transform: translate(50%, -50%);
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: gray; /* По умолчанию серый */
             color: white;
             font-size: 12px;
             font-weight: bold;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            padding: 0 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            display: none; /* По умолчанию скрыт */
+            visibility: visible; /* Всегда видимый */
         }
+
+        /* Красный цвет, если есть непрочитанные */
+        .unread-indicator.unread {
+            background-color: red;
+        }
+
+
+
+
+
+
 
     </style>
 </head>
@@ -359,26 +378,19 @@
     <!-- Контейнер для списка пользователей -->
     <div id="user-list-container" class="user-list-container">
         {% for user in users %}
-        <div class="user-card" id="user_{{ user['id'] }}" onclick="openUserDetail('{{ user['username'] }}', '{{ user['second_name'] }}', '{{ user['id'] }}')">
-            <div class="user-info">
-                <img src="{{ avatars[user['id']] }}" alt="Avatar" width="50" height="50">
-                <div class="unread-badge" id="unread_{{ user['id'] }}"></div> <!-- 🔴 Значок непрочитанных -->
-                <div>
-                    <div class="user-name" id="name_{{ user['id'] }}">
-                        {{ user['second_name'] }}
-                        <span class="edit-name" onclick="editName('{{ user['id'] }}', '{{ user['second_name'] }}', event)">✏️</span>
+            <div class="user-card" id="user_{{ user['id'] }}" onclick="openUserDetail('{{ user['username'] }}', '{{ user['second_name'] }}', '{{ user['id'] }}')">
+                <div class="user-info">
+                    <img src="{{ avatars[user['id']] }}" alt="Avatar" width="50" height="50">
+                    <div class="unread-indicator" id="unread_{{ user['id'] }}">0</div> <!-- Кружок с числом -->
+                    <div>
+                        <div class="user-name" id="name_{{ user['id'] }}">
+                            {{ user['second_name'] }}
+                            <span class="edit-name" onclick="editName('{{ user['id'] }}', '{{ user['second_name'] }}', event)">✏️</span>
+                        </div>
+                        <div class="user-status">{{ user['username'] }}</div>
                     </div>
-                    <div class="user-status">{{ user['username'] }}</div>
-                    <div class="mute-info">
-                        {% if user['mute_end'] != 'None' %}
-                            Мут до: {{ user['mute_end'] }}
-                        {% endif %}
-                    </div>
-                    <div class="user-rating">Рейтинг: {{ user['rating'] }}</div>
-                    <button class="chat-button" onclick="openChat('{{ user['id'] }}', '{{ user['second_name'] }}', '{{ user['username'] }}')">Чат</button>
                 </div>
             </div>
-        </div>
         {% endfor %}
     </div>
 
@@ -466,16 +478,7 @@
             return new Date(year, month - 1, day, hours, minutes); // Месяц начинается с 0, поэтому month-1
         }
 
-        function formatDate(dateString) {
-            const date = parseDate(dateString); // Преобразуем строку в объект Date
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('ru-RU', options);
-        }
 
-        function formatTime(dateString) {
-            const date = parseDate(dateString); // Преобразуем строку в объект Date
-            return date.toLocaleTimeString('ru-RU'); // Форматируем время
-        }
 
         function getChatMessages(userId) {
             return fetch('/get_chat_messages?userId=' + userId)
@@ -503,7 +506,6 @@
                 });
         }
 
-        let currentOpenChatId = null; // Переменная для хранения ID текущего открытого чата
         let chatUpdateInterval = null;
 
 
@@ -535,50 +537,6 @@
                 return new Date(`${year}-${month}-${day}T${time}:00`);
             }
 
-            function loadMessages() {
-                getChatMessages(userId).then(messages => {
-                    const chatMessagesContainer = document.getElementById('chat-messages');
-                    const isAtBottom = chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop <= chatMessagesContainer.clientHeight + 10;
-                    chatMessagesContainer.innerHTML = '';
-
-                    let lastDate = '';
-
-                    messages.forEach(message => {
-                        const messageDate = parseDate(message.time_sent);
-                        const formattedDate = messageDate.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
-                        const formattedTime = messageDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-
-                        // Разделение по датам
-                        if (formattedDate !== lastDate) {
-                            const dateElement = document.createElement('div');
-                            dateElement.classList.add('date-separator');
-                            dateElement.innerText = formattedDate;
-                            chatMessagesContainer.appendChild(dateElement);
-                            lastDate = formattedDate;
-                        }
-
-                        const messageElement = document.createElement('div');
-                        messageElement.classList.add('message');
-
-                        if (message.username === "SupportBot") {
-                            messageElement.classList.add('support');
-                        }
-
-                        messageElement.innerHTML = `
-                            <strong>${message.username}</strong>: ${message.message}
-                            <div class="timestamp">${formattedTime}</div>
-                        `;
-                        chatMessagesContainer.appendChild(messageElement);
-                    });
-
-                    if (isAtBottom) {
-                        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-                    }
-                });
-            }
-
-            loadMessages();
-
             if (chatUpdateInterval) clearInterval(chatUpdateInterval);
             chatUpdateInterval = setInterval(loadMessages, 1000);
 
@@ -586,34 +544,20 @@
             updateUnreadCount(userId);
         }
 
-        // 📌 Обновляем счетчик непрочитанных сообщений
-        function updateUnreadCount(userId, newMessages = 0) {
-            const unreadBadge = document.getElementById(`unread_${userId}`);
-            if (!unreadBadge) return; // Если элемента нет, выходим
-
-            if (newMessages > 0) {
-                unreadMessages[userId] = (unreadMessages[userId] || 0) + newMessages;
-                unreadBadge.innerText = unreadMessages[userId];
-                unreadBadge.style.display = 'flex';
-            } else {
-                unreadMessages[userId] = 0;
-                unreadBadge.style.display = 'none';
-            }
-        }
-
         function checkNewMessages() {
-            fetch('/check_unread_messages')  // Должен возвращать объект { userId: unreadCount }
+            fetch('/check_unread_messages') // Сервер должен вернуть { "userId": непрочитанные }
                 .then(response => response.json())
                 .then(data => {
+                    console.log("📥 Данные о непрочитанных сообщениях:", data);
                     for (const userId in data) {
                         updateUnreadCount(userId, data[userId]);
                     }
-                });
+                })
+                .catch(error => console.error("❌ Ошибка загрузки непрочитанных сообщений:", error));
         }
 
-        setInterval(checkNewMessages, 5000); // Проверяем новые сообщения каждые 5 секунд
-
-
+        // Запускаем автообновление
+        setInterval(checkNewMessages, 5000);
 
         // 📌 Добавляем индикатор сообщений в HTML
         document.querySelectorAll('.user-item').forEach(userElement => {
@@ -631,17 +575,19 @@
 
         // Функция для получения количества непрочитанных сообщений
         function checkUnreadMessages() {
-            fetch('/get_unread_messages')
+            fetch('/check_unread_messages')
                 .then(response => response.json())
                 .then(data => {
-                    data.forEach(user => {
-                        updateUnreadCount(user.user_id, user.unread_count);
+                    Object.keys(data).forEach(userId => {
+                        updateUnreadCount(userId, data[userId]);
                     });
-                });
+                })
+                .catch(error => console.error("❌ Ошибка загрузки непрочитанных сообщений:", error));
         }
 
-        // Запуск проверки непрочитанных сообщений каждую секунду
-        setInterval(checkUnreadMessages, 1000);
+        // Запускаем проверку непрочитанных сообщений каждые 5 секунд
+        setInterval(checkUnreadMessages, 5000);
+
 
 
         // Обработка нажатия кнопки ESC для закрытия чата
@@ -655,7 +601,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const inputField = document.querySelector("textarea[name='message']");
             const sendButton = document.querySelector("button[type='submit']");
-
+            console.log(`+++++++++++++++++++++++++++++++++++++++++==`);
             if (!inputField || !sendButton) {
                 console.error("Ошибка: не найдены элементы ввода или кнопка отправки.");
                 return;
@@ -696,23 +642,15 @@
                 console.log(`chatId ${chatId}`);
                 console.log(`username ${username}`);
                 console.log(`name ${name}`);
-                openChat(chatId, username, name)
+                openChat(chatId, name, username)
             });
         });
-
-
-
-
-
-
-
-
-
 
 
         document.addEventListener("DOMContentLoaded", function () {
             const chatForm = document.querySelector(".chat-input-container");
             const chatMessages = document.getElementById("chat-messages");
+            console.log(`==============================================`);
 
             chatForm.addEventListener("submit", function (event) {
                 event.preventDefault(); // Останавливаем стандартную отправку формы
@@ -766,6 +704,94 @@
             }
         });
 
+
+        function markMessagesAsRead(messages) {
+            const unreadMessages = messages.filter(msg => !msg.read); // Находим все непрочитанные
+
+            if (unreadMessages.length > 0) {
+                fetch("/mark_as_read", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messages: unreadMessages.map(msg => msg.id) }) // Отправляем только ID сообщений
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("✅ Сообщения отмечены как прочитанные");
+                    } else {
+                        console.error("⚠ Ошибка:", data.message);
+                    }
+                })
+                .catch(error => console.error("Ошибка запроса:", error));
+            }
+        }
+
+        function loadMessages() {
+            getChatMessages(userId).then(messages => {
+                const chatMessagesContainer = document.getElementById('chat-messages');
+                chatMessagesContainer.innerHTML = '';
+
+                messages.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message');
+                    messageElement.innerHTML = `
+                        <strong>${message.username}</strong>: ${message.message}
+                        <div class="timestamp">${message.time_sent}</div>
+                    `;
+
+                    if (!message.read) {
+                        messageElement.classList.add('unread'); // Подсветка непрочитанных
+                    }
+
+                    chatMessagesContainer.appendChild(messageElement);
+                });
+
+                // Если чат прокручен вниз — помечаем сообщения как прочитанные
+                if (chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop <= chatMessagesContainer.clientHeight + 10) {
+                    markMessagesAsRead(messages);
+                }
+            });
+        }
+
+        // Отслеживаем прокрутку, чтобы отмечать сообщения прочитанными
+        document.getElementById('chat-messages').addEventListener('scroll', function() {
+            if (this.scrollHeight - this.scrollTop <= this.clientHeight + 10) {
+                getChatMessages(userId).then(markMessagesAsRead);
+            }
+        });
+
+
+        function fetchUnreadCounts() {
+            fetch("/get_unread_counts") // Запрос на сервер
+                .then(response => response.json())
+                .then(data => {
+                    Object.keys(data).forEach(userId => {
+                        updateUnreadCount(userId, data[userId]); // Передаем id и количество
+                    });
+                })
+                .catch(error => console.error("Ошибка при получении непрочитанных сообщений:", error));
+        }
+
+        // Обновление количества сообщений
+        function updateUnreadCount(userId, count) {
+            const indicator = document.getElementById(`unread_${userId}`);
+
+            if (indicator) {
+                if (count > 0) {
+                    indicator.innerText = count; // Показываем количество
+                    indicator.classList.add('unread'); // Добавляем стиль для красного цвета
+                    indicator.style.display = 'flex'; // Показываем кружок
+                } else {
+                    indicator.innerText = ''; // Очищаем, если нет непрочитанных
+                    indicator.classList.remove('unread'); // Убираем стиль
+                    indicator.style.display = 'none'; // Скрываем кружок
+                }
+            }
+        }
+
+        // Запускаем при загрузке и обновляем каждые 5 секунд
+        fetchUnreadCounts();
+        setInterval(fetchUnreadCounts, 5000);
     </script>
 </body>
 </html>
