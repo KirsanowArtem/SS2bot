@@ -217,6 +217,30 @@
                 "message": "66756565645576876776987879866455465487897567365873687566758327598749878775987487687657567648743898987575",
                 "time_sent": "19:02; 15/02/2025",
                 "read": true
+            },
+            {
+                "username": "SupportBot",
+                "message": "хош прикол?",
+                "time_sent": "22:53; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "у меня не работала одна фишка",
+                "time_sent": "22:53; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "я начал ее исправлять и из-за єтого словалась вся програма",
+                "time_sent": "22:54; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "но я откатил и начала работать фишка которую я даже не ожидад",
+                "time_sent": "22:54; 01/03/2025",
+                "read": false
             }
         ]
     },
@@ -224,10 +248,39 @@
         "username": "Не вказано",
         "messages": [
             {
+                "username": "SupportBot",
+                "message": "Привіт! Я ваш бот підтримки. Введіть команду /rate для оцінки бота, /message для написання адміністраторам бота або /help для отримання інформації про команди.",
+                "time_sent": "20:01; 16/02/2025",
+                "read": true
+            },
+            {
                 "username": "немає імені користувача",
                 "message": "А",
                 "time_sent": "11:23; 17/02/2025",
                 "read": true
+            },
+            {
+                "username": "SupportBot",
+                "message": "хах",
+                "time_sent": "22:51; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "стоп",
+                "time_sent": "22:51; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "а не все норм",
+                "time_sent": "22:51; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "немає імені користувача",
+                "message": "",
+                "time_sent": "23:16; 01/03/2025"
             }
         ]
     },

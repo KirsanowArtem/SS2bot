@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="706f9c31-24c0-450c-812a-f44849fc8d1b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/PyToExe.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Tt2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TgBot.py" beforeDir="false" afterPath="$PROJECT_DIR$/TgBot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TgBot2.py" beforeDir="false" afterPath="$PROJECT_DIR$/TgBot2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tt2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tt2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chats.json" beforeDir="false" afterPath="$PROJECT_DIR$/chats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.json" beforeDir="false" afterPath="$PROJECT_DIR$/data.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/default_avatar.png" beforeDir="false" afterPath="$PROJECT_DIR$/default_avatar.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,25 +37,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.PyToExe.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Tg.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TgBot.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TgBot2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Tt2.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Programming/Python/SSbot&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.PyToExe.executor": "Run",
+    "Python.Tg.executor": "Run",
+    "Python.TgBot.executor": "Run",
+    "Python.TgBot2.executor": "Run",
+    "Python.Tt2.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "D:/Programming/Python/SSbot"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Programming\Python\SSbot" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Programming\Python\SSbot\static" />
       <recent name="D:\Programming\Python\SSbot" />
+      <recent name="D:\Programming\Python\SSbot\static" />
     </key>
   </component>
   <component name="RunManager" selected="Python.Tt2">
@@ -177,5 +175,16 @@
       <updated>1739552200483</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Tt2.py</url>
+          <line>936</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
