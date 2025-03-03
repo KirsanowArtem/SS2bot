@@ -370,26 +370,33 @@ class ChatApp:
                     radius=15,
                     bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
                 )
-                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
-                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
+                # Выравниваем внутренний фрейм по правому краю
+                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)
 
-                width = root.winfo_width()  # Получаем ширину окна
-                height = root.winfo_height()  # Получаем высоту окна
-                print(f"Ширина окна: {width}, Высота окна: {height}")
-                n=width-550
-                print(n)
+                width = self.root.winfo_width()  # Получаем ширину окна
+                n = width - 550  # Вычисляем ширину сообщения
 
-
-                # Добавляем текст сообщения
-                message_label = tk.Label(
+                # Добавляем текст сообщения (используем Text для выделения)
+                message_text = tk.Text(
                     inner_frame,
-                    text=msg["message"],
                     font=("Helvetica", 12),
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    wraplength=n,
-                    justify="right",
+                    wrap=tk.WORD,
+                    width=int(n / 10),  # Динамическая ширина
+                    height=1,  # Минимальная высота
+                    padx=10,
+                    pady=5,
+                    highlightthickness=0,
+                    borderwidth=0,
                 )
-                message_label.pack(side=tk.RIGHT,padx=10, pady=5, anchor="e")  # Выравниваем текст по правому краю
+                message_text.insert(tk.END, msg["message"])
+                message_text.config(state=tk.DISABLED)  # Делаем текст неизменяемым
+
+                # Включаем возможность выделения текста
+                message_text.bind("<Button-1>", lambda event: "break")  # Отключаем редактирование
+                message_text.bind("<Control-c>", self.copy_text)  # Копирование текста
+
+                message_text.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
 
                 # Добавляем время отправки (внутри контейнера сообщения)
                 time_label = tk.Label(
@@ -399,7 +406,7 @@ class ChatApp:
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
                     fg="green",
                 )
-                time_label.pack(padx=10, pady=(0, 5), anchor="e")  # Выравниваем время по правому краю
+                time_label.pack(side=tk.BOTTOM, padx=10, pady=(0, 5), anchor="e")  # Выравниваем время по правому краю
 
                 # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
                 if not is_bot and message_date != current_date:
@@ -415,6 +422,12 @@ class ChatApp:
 
         # Обновляем область прокрутки
         self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+    def copy_text(self, event):
+        """Копирует выделенный текст в буфер обмена."""
+        self.root.clipboard_clear()
+        self.root.clipboard_append(self.root.selection_get())
+        return "break"
 
     def update_user_info(self, user):
         """Обновляет информацию о пользователе в header_frame."""
@@ -446,10 +459,6 @@ class ChatApp:
 
             # Сохраняем сообщение
             save_message_to_json(self.current_user_id, "SupportBot", message)
-
-
-
-
 
 
 
