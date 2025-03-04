@@ -114,21 +114,6 @@
             },
             {
                 "username": "ArtemKirss",
-                "message": "хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх",
-                "time_sent": "16:34; 24/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "D:\\Programming\\Python\\SSbot\\.venv\\Scripts\\python.exe D:\\Programming\\Python\\SSbot\\Tt2.py \n * Serving Flask app 'Tt2'\n * Debug mode: off\nWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://192.168.31.105:5000\nPress CTRL+C to quit\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\nhttps://api.telegram.org/file/bot7677888606:AAHMm3aSt84ZQkJ0wrlH4__St3lW36-TL8g/photos/file_8.jpg\n=0=\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\ndefault_avatar.png\nОшибка загрузки изображения: default_avatar.png\n0-0\n12\n{'1840233118': {'username': 'ArtemKirss', 'messages': [{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]}, '1013802830': {'username': 'RavaNay', 'messages': [{'username': 'RavaNay', 'message': 'оаоаоа', 'time_sent': '19:02; 13/02/2025', 'read': True}]}, '6222116355': {'username': 'Не вказано', 'messages': [{'username': 'немає імені користувача', 'message': 'А', 'time_sent': '11:23; 17/02/2025', 'read': True}]}, '698846573': {'username': 'Не вказано', 'messages': [{'username': 'немає імені користувача', 'message': 'Прикольный бот!', 'time_sent': '14:29; 18/02/2025', 'read': True}]}, '5708855619': {'username': 'SupportBot', 'messages': [{'username': 'SupportBot', 'message': 'ghbdtn', 'time_sent': '09:40; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'привет', 'time_sent': '09:40; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '14:25; 23/02/2025', 'read': False}]}}",
-                "time_sent": "16:34; 24/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
-                "message": "{'username': 'ArtemKirss', 'messages': [{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]}\n[{'user_id': 1840233118, 'username': 'ArtemKirss', 'message': 'ож', 'time_sent': '15:34; 11/02/2025', 'read': True}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'нн', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'не', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'лоро', 'time_sent': '23:30; 21/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '23:45; 21/02/2025'}, {'username': 'ArtemKirss', 'message': 'пававі', 'time_sent': '10:58; 22/02/2025'}, {'username': 'SupportBot', 'message': 'хах', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ж', 'time_sent': '11:18; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'а', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'ееууеу', 'time_sent': '19:17; 22/02/2025', 'read': False}, {'username': 'SupportBot', 'message': '435', 'time_sent': '09:01; 23/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'SupportBot', 'message': 'о', 'time_sent': '15:15; 24/02/2025', 'read': False}, {'username': 'ArtemKirss', 'message': 'л', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'о', 'time_sent': '15:16; 24/02/2025'}, {'username': 'ArtemKirss', 'message': 'жэ', 'time_sent': '15:16; 24/02/2025'}, {'username': 'SupportBot', 'message': 'л', 'time_sent': '15:16; 24/02/2025', 'read': False}]\n21\n127.0.0.1 - - [24/Feb/2025 16:34:26] \"POST /update_chat HTTP/1.1\" 200 -\n📩 Новое сообщение: {'username': 'ArtemKirss', 'message': 'хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх', 'time_sent': '16:34; 24/02/2025'}\n✅ Данные успешно отправлены на сайт",
-                "time_sent": "16:34; 24/02/2025"
-            },
-            {
-                "username": "ArtemKirss",
                 "message": "Пдт",
                 "time_sent": "18:50; 25/02/2025"
             },
@@ -151,6 +136,51 @@
                 "username": "SupportBot",
                 "message": "п",
                 "time_sent": "17:52; 28/02/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "0",
+                "time_sent": "10:39; 04/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "00",
+                "time_sent": "10:39; 04/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "000",
+                "time_sent": "10:41; 04/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "0000",
+                "time_sent": "10:41; 04/03/2025",
+                "read": false
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "о",
+                "time_sent": "10:42; 04/03/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "ооо",
+                "time_sent": "10:42; 04/03/2025"
+            },
+            {
+                "username": "ArtemKirss",
+                "message": "оооооо",
+                "time_sent": "10:42; 04/03/2025"
+            },
+            {
+                "username": "SupportBot",
+                "message": "0",
+                "time_sent": "10:42; 04/03/2025",
                 "read": false
             }
         ]

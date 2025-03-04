@@ -370,33 +370,27 @@ class ChatApp:
                     radius=15,
                     bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
                 )
-                # Выравниваем внутренний фрейм по правому краю
-                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)
+                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
+                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
 
-                width = self.root.winfo_width()  # Получаем ширину окна
-                n = width - 550  # Вычисляем ширину сообщения
-
-                # Добавляем текст сообщения (используем Text для выделения)
+                # Добавляем текст сообщения
                 message_text = tk.Text(
                     inner_frame,
+                    wrap=tk.WORD,
                     font=("Helvetica", 12),
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    wrap=tk.WORD,
-                    width=int(n / 10),  # Динамическая ширина
-                    height=1,  # Минимальная высота
-                    padx=10,
-                    pady=5,
-                    highlightthickness=0,
-                    borderwidth=0,
+                    relief=tk.FLAT,
+                    height=1,  # Начальная высота
                 )
                 message_text.insert(tk.END, msg["message"])
-                message_text.config(state=tk.DISABLED)  # Делаем текст неизменяемым
+                message_text.config(state=tk.DISABLED)  # Делаем текст только для чтения
+                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
 
-                # Включаем возможность выделения текста
-                message_text.bind("<Button-1>", lambda event: "break")  # Отключаем редактирование
-                message_text.bind("<Control-c>", self.copy_text)  # Копирование текста
+                # Обновляем ширину текстового поля при изменении размера окна
+                self.update_message_width(message_text)
 
-                message_text.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
+                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
+                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt))
 
                 # Добавляем время отправки (внутри контейнера сообщения)
                 time_label = tk.Label(
@@ -406,7 +400,7 @@ class ChatApp:
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
                     fg="green",
                 )
-                time_label.pack(side=tk.BOTTOM, padx=10, pady=(0, 5), anchor="e")  # Выравниваем время по правому краю
+                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5), anchor="se")  # Выравниваем время по правому нижнему углу
 
                 # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
                 if not is_bot and message_date != current_date:
@@ -423,11 +417,18 @@ class ChatApp:
         # Обновляем область прокрутки
         self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
 
-    def copy_text(self, event):
-        """Копирует выделенный текст в буфер обмена."""
-        self.root.clipboard_clear()
-        self.root.clipboard_append(self.root.selection_get())
-        return "break"
+    def update_message_width(self, message_text):
+        """Обновляет ширину текстового поля в зависимости от ширины окна."""
+        window_width = self.root.winfo_width()
+        message_width = int((window_width - 550) / 10)  # Уменьшаем длину сообщения
+        message_text.config(width=message_width)
+
+        # Обновляем высоту текстового поля в зависимости от количества строк
+        message_text_height = int(len(message_text.get("1.0", tk.END)))/int((window_width - 550) / 10)
+        message_text.config(height=message_text_height)
+
+        # Выводим текст сообщения для отладки
+        print(message_text.get("1.0", tk.END))
 
     def update_user_info(self, user):
         """Обновляет информацию о пользователе в header_frame."""
@@ -459,12 +460,6 @@ class ChatApp:
 
             # Сохраняем сообщение
             save_message_to_json(self.current_user_id, "SupportBot", message)
-
-
-
-
-
-
 
 #-------------------------------------------------------------------------------------------------------------------------------
 
