@@ -373,23 +373,24 @@ class ChatApp:
                 # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
                 inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
 
-                width = root.winfo_width()  # Получаем ширину окна
-                height = root.winfo_height()  # Получаем высоту окна
-                print(f"Ширина окна: {width}, Высота окна: {height}")
-                n=width-550
-                print(n)
-
-
                 # Добавляем текст сообщения
-                message_label = tk.Label(
+                message_text = tk.Text(
                     inner_frame,
-                    text=msg["message"],
+                    wrap=tk.WORD,
                     font=("Helvetica", 12),
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    wraplength=n,
-                    justify="right",
+                    relief=tk.FLAT,
+                    height=1,  # Начальная высота
                 )
-                message_label.pack(side=tk.RIGHT,padx=10, pady=5, anchor="e")  # Выравниваем текст по правому краю
+                message_text.insert(tk.END, msg["message"])
+                message_text.config(state=tk.DISABLED)  # Делаем текст только для чтения
+                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
+
+                # Обновляем ширину текстового поля при изменении размера окна
+                self.update_message_width(message_text)
+
+                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
+                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt))
 
                 # Добавляем время отправки (внутри контейнера сообщения)
                 time_label = tk.Label(
@@ -399,7 +400,7 @@ class ChatApp:
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
                     fg="green",
                 )
-                time_label.pack(padx=10, pady=(0, 5), anchor="e")  # Выравниваем время по правому краю
+                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5), anchor="se")  # Выравниваем время по правому нижнему углу
 
                 # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
                 if not is_bot and message_date != current_date:
@@ -415,6 +416,19 @@ class ChatApp:
 
         # Обновляем область прокрутки
         self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+    def update_message_width(self, message_text):
+        """Обновляет ширину текстового поля в зависимости от ширины окна."""
+        window_width = self.root.winfo_width()
+        message_width = int((window_width - 550) / 10)  # Уменьшаем длину сообщения
+        message_text.config(width=message_width)
+
+        # Обновляем высоту текстового поля в зависимости от количества строк
+        message_text_height = int(len(message_text.get("1.0", tk.END)))/int((window_width - 550) / 10)
+        message_text.config(height=message_text_height)
+
+        # Выводим текст сообщения для отладки
+        print(message_text.get("1.0", tk.END))
 
     def update_user_info(self, user):
         """Обновляет информацию о пользователе в header_frame."""
@@ -446,16 +460,6 @@ class ChatApp:
 
             # Сохраняем сообщение
             save_message_to_json(self.current_user_id, "SupportBot", message)
-
-
-
-
-
-
-
-
-
-
 
 #-------------------------------------------------------------------------------------------------------------------------------
 

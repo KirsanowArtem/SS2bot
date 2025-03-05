@@ -41,6 +41,8 @@ from tkinter import scrolledtext, simpledialog
 from PIL import Image, ImageTk
 import io
 
+from tkinter import Menu
+
 from gevent import monkey
 
 nest_asyncio.apply()
@@ -229,7 +231,7 @@ class ChatApp:
         self.user_canvas.configure(yscrollcommand=self.user_scrollbar.set)
 
         # Привязка колесика мыши к Canvas
-        self.user_canvas.bind("<MouseWheel>", self.on_mousewheel)
+        self.user_canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Размещение Canvas и Scrollbar
         self.user_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -256,9 +258,6 @@ class ChatApp:
             user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
 
             self.user_buttons[user_id] = user_frame
-
-            # Привязка колесика мыши ко всем элементам внутри user_frame
-            self.bind_mousewheel(user_frame, self.on_mousewheel)
 
         # Фрейм для чата
         self.chat_frame = tk.Frame(self.main_frame)
@@ -298,7 +297,7 @@ class ChatApp:
         self.chat_canvas.configure(yscrollcommand=self.chat_scrollbar.set)
 
         # Привязка колесика мыши к Canvas чата
-        self.chat_canvas.bind("<MouseWheel>", self.on_mousewheel_chat)
+        self.chat_canvas.bind_all("<MouseWheel>", self.on_mousewheel_chat)
 
         # Размещение Canvas и Scrollbar
         self.chat_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -308,8 +307,13 @@ class ChatApp:
         self.entry_frame = tk.Frame(self.chat_frame, bg="#f0f0f0")
         self.entry_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
 
-        self.chat_input = tk.Entry(self.entry_frame, font=("Helvetica", 12))
+        self.chat_input = tk.Text(self.entry_frame, font=("Helvetica", 12), height=3)
         self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        self.chat_input.bind("<Control-v>", self.paste_text)  # Привязываем Ctrl+V для вставки текста
+        self.chat_input.bind("<Control-V>", self.paste_text)  # Привязываем Ctrl+V для вставки текста (альтернативный биндинг)
+        self.chat_input.bind("<Control-Insert>", self.paste_text)  # Привязываем Ctrl+Insert для вставки текста
+        self.chat_input.bind("<Shift-Insert>", self.paste_text)  # Привязываем Shift+Insert для вставки текста
+        self.chat_input.bind("<Return>", self.send_message_event)  # Привязываем Enter для отправки сообщения
         self.send_button = tk.Button(self.entry_frame, text="Отправить", command=self.send_message, font=("Helvetica", 12))
         self.send_button.pack(side=tk.RIGHT)
 
@@ -383,8 +387,16 @@ class ChatApp:
                     height=1,  # Начальная высота
                 )
                 message_text.insert(tk.END, msg["message"])
-                message_text.config(state=tk.DISABLED)  # Делаем текст только для чтения
+                message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
+                message_text.bind("<Control-Key-c>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+C для копирования текста
+                message_text.bind("<Control-Key-C>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+C для копирования текста (альтернативный биндинг)
+                message_text.bind("<Control-Insert>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+Insert для копирования текста
+                message_text.bind("<Shift-Insert>", lambda e: self.paste_text_event(message_text))  # Привязываем Shift+Insert для вставки текста
+                message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
                 message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
+
+                # Привязка колесика мыши к Canvas
+                self.bind_mousewheel(message_text, self.on_mousewheel_chat)
 
                 # Обновляем ширину текстового поля при изменении размера окна
                 self.update_message_width(message_text)
@@ -416,6 +428,9 @@ class ChatApp:
 
         # Обновляем область прокрутки
         self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+        # Устанавливаем фокус на поле ввода сообщения
+        self.chat_input.focus_set()
 
     def update_message_width(self, message_text):
         """Обновляет ширину текстового поля в зависимости от ширины окна."""
@@ -452,14 +467,53 @@ class ChatApp:
         if not self.current_user_id:
             return
 
-        message = self.chat_input.get().strip()
+        message = self.chat_input.get("1.0", tk.END).strip()
         if message:
             # Добавляем сообщение в чат
             self.open_chat(self.current_user_id)  # Обновляем чат
-            self.chat_input.delete(0, tk.END)
+            self.chat_input.delete("1.0", tk.END)
 
             # Сохраняем сообщение
+            send_message(self.current_user_id, message)
             save_message_to_json(self.current_user_id, "SupportBot", message)
+
+    def send_message_event(self, event):
+        """Отправляет сообщение и обновляет чат (для привязки к событию)."""
+        self.send_message()
+        return "break"  # Прерываем дальнейшую обработку события
+
+    def show_context_menu(self, event):
+        """Показывает контекстное меню для копирования текста."""
+        context_menu = Menu(self.root, tearoff=0)
+        context_menu.add_command(label="Копировать", command=lambda: self.copy_text(event.widget))
+        context_menu.tk_popup(event.x_root, event.y_root)
+
+    def copy_text(self, widget):
+        """Копирует выделенный текст в буфер обмена."""
+        try:
+            selected_text = widget.selection_get()
+            self.root.clipboard_clear()
+            self.root.clipboard_append(selected_text)
+            self.root.update()  # Обновляем буфер обмена
+        except tk.TclError:
+            pass
+
+    def paste_text(self, event):
+        """Вставляет текст из буфера обмена в поле ввода."""
+        try:
+            clipboard_text = self.root.clipboard_get()
+            self.chat_input.insert(tk.INSERT, clipboard_text)
+        except tk.TclError:
+            pass
+
+    def paste_text_event(self, widget):
+        """Вставляет текст в указанное текстовое поле."""
+        try:
+            clipboard_text = self.root.clipboard_get()
+            widget.insert(tk.INSERT, clipboard_text)
+        except tk.TclError:
+            pass
+
 
 #-------------------------------------------------------------------------------------------------------------------------------
 
