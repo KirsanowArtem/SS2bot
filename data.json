@@ -78,9 +78,7 @@
             "reason": null
         }
     ],
-    "muted_users": {
-        "Kirsanov_Dmitrij": true
-    },
+    "muted_users": {},
     "admins": [],
     "programmers": [
         "ArtemKirss"

@@ -75,7 +75,12 @@ HEADERS = {
 def load_data2():
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
+    print(DATA_FILE)
     return {user["id"]: user for user in data["users"]}
+
+def save_data2(data):
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 def load_chats2():
     try:
@@ -172,6 +177,29 @@ def save_message_to_json(user_id, username, message):
 
     return True
 
+
+def update_second_name(user_id, new_second_name, file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        user_found = False
+        for user in data['users']:
+            if user['id'] == user_id:
+                user['second_name'] = new_second_name
+                user_found = True
+                break
+
+        if user_found:
+            with open(file_path, 'w', encoding='utf-8') as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+            print(f"Имя пользователя с ID {user_id} успешно обновлено.")
+        else:
+            print(f"Пользователь с ID {user_id} не найден.")
+
+    except Exception as e:
+        print(f"Ошибка при обновлении имени пользователя: {e}")
+
 class RoundedFrame(tk.Canvas):
     """Кастомный фрейм с закругленными углами."""
     def __init__(self, master, radius=20, bg="white", **kwargs):
@@ -210,6 +238,7 @@ class ChatApp:
 
         self.users = load_data2()
         self.chats = load_chats2()
+        self.file_path = 'path_to_your_json_file.json'
 
         self.main_frame = tk.Frame(root)
         self.main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
@@ -245,7 +274,7 @@ class ChatApp:
             user_frame.pack(fill=tk.X, padx=5, pady=2)
 
             avatar = get_user_avatar(user_id)
-            if avatar:
+            if (avatar):
                 avatar = avatar.resize((40, 40))
                 avatar_image = ImageTk.PhotoImage(avatar)
                 avatar_label = tk.Label(user_frame, image=avatar_image)
@@ -256,6 +285,9 @@ class ChatApp:
                                   font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
             user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
             user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            edit_button.pack(side=tk.RIGHT, padx=5)
 
             self.user_buttons[user_id] = user_frame
 
@@ -524,6 +556,42 @@ class ChatApp:
             elif event.keycode in (67, 99):  # Ctrl+C
                 self.copy_text_event(event)
 
+    def edit_user_name(self, user_id):
+        """Открывает окно редактирования имени пользователя и обновляет данные."""
+        old_name = self.users[user_id]['second_name']
+        new_name = simpledialog.askstring("Изменить имя пользователя", f"Старое имя: {old_name}\nВведите новое имя:", initialvalue=old_name)
+
+        if new_name and new_name.strip():
+            self.users[user_id]['second_name'] = new_name.strip()
+            self.update_user_list()
+            # Используем новую функцию для обновления только second_name
+            update_second_name(user_id, new_name.strip(), DATA_FILE)
+
+    def update_user_list(self):
+        """Обновляет список пользователей."""
+        for user_id, user_frame in self.user_buttons.items():
+            for widget in user_frame.winfo_children():
+                widget.destroy()
+
+            avatar = get_user_avatar(user_id)
+            if avatar:
+                avatar = avatar.resize((40, 40))
+                avatar_image = ImageTk.PhotoImage(avatar)
+                avatar_label = tk.Label(user_frame, image=avatar_image)
+                avatar_label.image = avatar_image
+                avatar_label.pack(side=tk.LEFT, padx=5)
+
+            user_label = tk.Label(user_frame, text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
+                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
+            user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            edit_button.pack(side=tk.RIGHT, padx=5)
+
+
+
+
 #-------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -606,6 +674,7 @@ def load_chat_id_from_file(file_path=DATA_FILE):
         data = json.load(file)
 
     chat_id = data.get("chat_id")
+    print(file_path)
     return chat_id
 
 def load_bottocen_from_file(file_path=DATA_FILE):
@@ -1818,7 +1887,7 @@ async def set_alllist(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text("Будь ласка пришліть Excel file з данними.")
     context.user_data["awaiting_file"] = True
 
-async def set_default_commands(application):
+"""async def set_default_commands(application):
     commands = [
         BotCommand("start", "Запустити бота"),
         BotCommand("rate", "Залишити відгук"),
@@ -1838,6 +1907,7 @@ async def set_creator_commands(application):
         BotCommand("info", "Показати інформацію про програмістів та адміністраторів"),
         BotCommand("get_alllist", "Отримати Exel файл з користувачами"),
         BotCommand("set_alllist", "Записати Exel файл з користувачами"),
+        print(CREATOR_CHAT_ID)
     ]
     await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=CREATOR_CHAT_ID))
 
@@ -1847,7 +1917,7 @@ async def set_save_commands(application):
         BotCommand("set_alllist", "Записати Exel файл з користувачами"),
         BotCommand("help", "Показати доступні команди"),
     ]
-    await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=-1002310142084))
+    await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=-1002310142084))"""
 
 async def send_user_list():
     try:
@@ -1940,9 +2010,9 @@ async def main():
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, handle_message))
 
-    await set_default_commands(application)
+    """await set_default_commands(application)
     await set_creator_commands(application)
-    await set_save_commands(application)
+    await set_save_commands(application)"""
 
 
     scheduler = AsyncIOScheduler(timezone=pytz.timezone("Europe/Kyiv"))

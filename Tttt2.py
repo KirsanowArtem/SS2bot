@@ -309,11 +309,7 @@ class ChatApp:
 
         self.chat_input = tk.Text(self.entry_frame, font=("Helvetica", 12), height=3)
         self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        self.chat_input.bind("<Control-v>", self.paste_text)  # Привязываем Ctrl+V для вставки текста
-        self.chat_input.bind("<Control-V>", self.paste_text)  # Привязываем Ctrl+V для вставки текста (альтернативный биндинг)
-        self.chat_input.bind("<Control-Insert>", self.paste_text)  # Привязываем Ctrl+Insert для вставки текста
-        self.chat_input.bind("<Shift-Insert>", self.paste_text)  # Привязываем Shift+Insert для вставки текста
-        self.chat_input.bind("<Return>", self.send_message_event)  # Привязываем Enter для отправки сообщения
+        self.chat_input.bind("<KeyPress>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
         self.send_button = tk.Button(self.entry_frame, text="Отправить", command=self.send_message, font=("Helvetica", 12))
         self.send_button.pack(side=tk.RIGHT)
 
@@ -388,11 +384,8 @@ class ChatApp:
                 )
                 message_text.insert(tk.END, msg["message"])
                 message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
-                message_text.bind("<Control-Key-c>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+C для копирования текста
-                message_text.bind("<Control-Key-C>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+C для копирования текста (альтернативный биндинг)
-                message_text.bind("<Control-Insert>", lambda e: self.copy_text(message_text))  # Привязываем Ctrl+Insert для копирования текста
-                message_text.bind("<Shift-Insert>", lambda e: self.paste_text_event(message_text))  # Привязываем Shift+Insert для вставки текста
                 message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
+                message_text.bind("<Control-Key>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
                 message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
 
                 # Привязка колесика мыши к Canvas
@@ -469,13 +462,13 @@ class ChatApp:
 
         message = self.chat_input.get("1.0", tk.END).strip()
         if message:
-            # Добавляем сообщение в чат
-            self.open_chat(self.current_user_id)  # Обновляем чат
-            self.chat_input.delete("1.0", tk.END)
-
             # Сохраняем сообщение
             send_message(self.current_user_id, message)
             save_message_to_json(self.current_user_id, "SupportBot", message)
+
+            # Добавляем сообщение в чат
+            self.open_chat(self.current_user_id)  # Обновляем чат
+            self.chat_input.delete("1.0", tk.END)
 
     def send_message_event(self, event):
         """Отправляет сообщение и обновляет чат (для привязки к событию)."""
@@ -498,11 +491,19 @@ class ChatApp:
         except tk.TclError:
             pass
 
+    def copy_text_event(self, event):
+        """Обрабатывает событие копирования текста."""
+        widget = self.root.focus_get()
+        if isinstance(widget, tk.Text):
+            self.copy_text(widget)
+            return "break"  # Прерываем дальнейшую обработку события
+
     def paste_text(self, event):
         """Вставляет текст из буфера обмена в поле ввода."""
         try:
             clipboard_text = self.root.clipboard_get()
             self.chat_input.insert(tk.INSERT, clipboard_text)
+            return "break"  # Прерываем дальнейшую обработку события
         except tk.TclError:
             pass
 
@@ -511,9 +512,17 @@ class ChatApp:
         try:
             clipboard_text = self.root.clipboard_get()
             widget.insert(tk.INSERT, clipboard_text)
+            return "break"  # Прерываем дальнейшую обработку события
         except tk.TclError:
             pass
 
+    def key_press_handler(self, event):
+        """Обрабатывает нажатия клавиш для копирования и вставки."""
+        if event.state & 0x4:  # Проверяем нажатие Ctrl
+            if event.keycode in (86, 118):  # Ctrl+V
+                self.paste_text(event)
+            elif event.keycode in (67, 99):  # Ctrl+C
+                self.copy_text_event(event)
 
 #-------------------------------------------------------------------------------------------------------------------------------
 

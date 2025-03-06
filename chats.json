@@ -72,6 +72,12 @@
                 "message": "Введіть",
                 "time_sent": "09:12; 06/03/2025",
                 "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "Введіть",
+                "time_sent": "21:19; 06/03/2025",
+                "read": false
             }
         ]
     },
@@ -123,6 +129,18 @@
                 "message": "Прикольный бот!",
                 "time_sent": "14:29; 18/02/2025",
                 "read": true
+            },
+            {
+                "username": "SupportBot",
+                "message": "о",
+                "time_sent": "21:19; 06/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "у тебя новая ава",
+                "time_sent": "21:19; 06/03/2025",
+                "read": false
             }
         ]
     },
