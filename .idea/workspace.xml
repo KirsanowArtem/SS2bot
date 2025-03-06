@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="706f9c31-24c0-450c-812a-f44849fc8d1b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Supp0rts2Bot_all_users.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Supp0rts2Bot_all_users.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Tt2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tt2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tttt2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tttt2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chats.json" beforeDir="false" afterPath="$PROJECT_DIR$/chats.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +59,7 @@
       <recent name="D:\Programming\Python\SSbot\static" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.Tt2">
     <configuration name="TgBot" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="SSbot" />
       <option name="ENV_FILES" value="" />
@@ -178,7 +181,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Tt2.py</url>
-          <line>924</line>
+          <line>986</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
