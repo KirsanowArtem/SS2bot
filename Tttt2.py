@@ -12,16 +12,17 @@ import pandas as pd
 import requests
 import logging
 
-
 import telegram.error
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatPermissions, \
     BotCommand, BotCommandScopeDefault, BotCommandScopeChat, Bot
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext, ContextTypes
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext, \
+    ContextTypes
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify #Убрать  SocketIO ----------------------
+from flask import Flask, render_template, request, redirect, url_for, session, \
+    jsonify  # Убрать  SocketIO ----------------------
 import hashlib
 import json
 import hashlib
@@ -36,7 +37,7 @@ from datetime import datetime
 from telegram.ext import Application
 
 import tkinter as tk
-from tkinter import scrolledtext, simpledialog
+from tkinter import scrolledtext, simpledialog, messagebox
 
 from PIL import Image, ImageTk
 import io
@@ -49,7 +50,6 @@ nest_asyncio.apply()
 
 global muted_users
 
-
 scheduler = BackgroundScheduler(timezone="Europe/Kiev")
 
 EXCEL_FILE = "user_data_export.xlsx"
@@ -57,7 +57,6 @@ EXCEL_FILE = "user_data_export.xlsx"
 application = None
 
 app = Flask(__name__)
-
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Ключ для сессий
@@ -71,11 +70,26 @@ HEADERS = {
 }
 
 
-#-------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------
 def load_data2():
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
+    print(DATA_FILE)
     return {user["id"]: user for user in data["users"]}
+
+
+def save_data2(self):
+    """Сохраняет данные в JSON-файл, обновляя только нужные поля."""
+    try:
+        # Обновляем данные пользователей в self.data
+        self.data["users"] = list(self.users.values())
+
+        # Сохраняем обновленные данные обратно в файл
+        with open("users.json", "w", encoding="utf-8") as file:
+            json.dump(self.data, file, ensure_ascii=False, indent=4)
+    except Exception as e:
+        print(f"Ошибка при сохранении данных: {e}")
+
 
 def load_chats2():
     try:
@@ -83,6 +97,7 @@ def load_chats2():
             return json.load(f)
     except FileNotFoundError:
         return {}
+
 
 def download_default_avatar():
     """Скачивает стандартный аватар и сохраняет локально."""
@@ -101,11 +116,13 @@ def download_default_avatar():
         print(f"Ошибка загрузки стандартного аватара: {e}")
         return None  # Если не удалось скачать, возвращаем None
 
+
 def check_avatar(user_id):
     """Проверяет наличие аватара пользователя и возвращает URL аватара или путь к стандартному аватару."""
     try:
         response = requests.get(f"{TELEGRAM_API_URL}getUserProfilePhotos?user_id={user_id}&limit=1", timeout=5)
         data = response.json()
+        print(BOTTOCEN)
 
         if data.get("result", {}).get("photos"):
             file_id = data["result"]["photos"][0][0]["file_id"]
@@ -117,6 +134,7 @@ def check_avatar(user_id):
 
     return DEFAULT_AVATAR_PATH  # Если нет аватара, возвращаем путь к стандартному аватару
 
+
 def download_image(url):
     """Пытается загрузить изображение по URL и вернуть объект PIL.Image."""
     try:
@@ -125,6 +143,7 @@ def download_image(url):
         return Image.open(io.BytesIO(response.content))
     except requests.exceptions.RequestException:
         return None
+
 
 def get_user_avatar(user_id):
     """Загружает аватар пользователя с приоритетом: Telegram -> Ссылка -> Локальный файл."""
@@ -146,6 +165,7 @@ def get_user_avatar(user_id):
         return Image.open(DEFAULT_AVATAR_PATH)
 
     return None
+
 
 def save_message_to_json(user_id, username, message):
     """Добавляет сообщение в chats.json с флагом прочитанности"""
@@ -172,8 +192,34 @@ def save_message_to_json(user_id, username, message):
 
     return True
 
+
+def update_second_name(user_id, new_second_name, file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        user_found = False
+        for user in data['users']:
+            if user['id'] == user_id:
+                user['second_name'] = new_second_name
+                user_found = True
+                break
+
+        if user_found:
+            with open(file_path, 'w', encoding='utf-8') as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+            print(f"Имя пользователя с ID {user_id} успешно обновлено.")
+
+        else:
+            print(f"Пользователь с ID {user_id} не найден.")
+
+    except Exception as e:
+        print(f"Ошибка при обновлении имени пользователя: {e}")
+
+
 class RoundedFrame(tk.Canvas):
     """Кастомный фрейм с закругленными углами."""
+
     def __init__(self, master, radius=20, bg="white", **kwargs):
         super().__init__(master, bg=bg, highlightthickness=0, **kwargs)
         self.radius = radius
@@ -203,6 +249,7 @@ class RoundedFrame(tk.Canvas):
         ]
         return self.create_polygon(points, **kwargs, smooth=True)
 
+
 class ChatApp:
     def __init__(self, root):
         self.root = root
@@ -210,6 +257,8 @@ class ChatApp:
 
         self.users = load_data2()
         self.chats = load_chats2()
+        self.file_path = 'data.json'
+        self.bot_token = BOTTOCEN  # Замените на ваш токен бота
 
         self.main_frame = tk.Frame(root)
         self.main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
@@ -248,14 +297,19 @@ class ChatApp:
             if avatar:
                 avatar = avatar.resize((40, 40))
                 avatar_image = ImageTk.PhotoImage(avatar)
-                avatar_label = tk.Label(user_frame, image=avatar_image)
+                avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
                 avatar_label.image = avatar_image
                 avatar_label.pack(side=tk.LEFT, padx=5)
+                if user.get("mute", False):
+                    avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
 
             user_label = tk.Label(user_frame, text=f"{user['second_name']} ({user['username']})",
                                   font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
             user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
             user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            edit_button.pack(side=tk.RIGHT, padx=5)
 
             self.user_buttons[user_id] = user_frame
 
@@ -268,7 +322,7 @@ class ChatApp:
         self.header_frame.pack(fill=tk.X, padx=5, pady=5)
 
         # Аватар пользователя
-        self.avatar_label = tk.Label(self.header_frame)
+        self.avatar_label = tk.Label(self.header_frame, bd=2, relief="solid")
         self.avatar_label.pack(side=tk.LEFT, padx=5)
 
         # Информация о пользователе
@@ -283,6 +337,10 @@ class ChatApp:
 
         self.user_id_label = tk.Label(self.user_info_frame, font=("Helvetica", 10), anchor="w")
         self.user_id_label.pack(fill=tk.X)
+
+        # Кнопка Замутить/Размутить
+        self.mute_button = tk.Button(self.header_frame, text="Замутить", command=self.toggle_mute)
+        self.mute_button.pack(side=tk.RIGHT, padx=5)
 
         # Чат
         self.chat_canvas = tk.Canvas(self.chat_frame, bg="#f0f0f0", highlightthickness=0)
@@ -310,10 +368,12 @@ class ChatApp:
         self.chat_input = tk.Text(self.entry_frame, font=("Helvetica", 12), height=3)
         self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         self.chat_input.bind("<KeyPress>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
-        self.send_button = tk.Button(self.entry_frame, text="Отправить", command=self.send_message, font=("Helvetica", 12))
+        self.send_button = tk.Button(self.entry_frame, text="Отправить", command=self.send_message,
+                                     font=("Helvetica", 12))
         self.send_button.pack(side=tk.RIGHT)
 
         self.current_user_id = None
+        self.mute_end_label = None
 
     def bind_mousewheel(self, widget, handler):
         """Рекурсивно привязывает событие прокрутки ко всем дочерним элементам."""
@@ -329,102 +389,6 @@ class ChatApp:
         """Обработчик события прокрутки колесика мыши для чата."""
         self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-    def open_chat(self, user_id):
-        """Открывает чат с выбранным пользователем."""
-        self.current_user_id = user_id
-        user = self.users[user_id]
-        print(user)
-
-        # Обновляем информацию о пользователе в header_frame
-        self.update_user_info(user)
-
-        # Очищаем чат и загружаем сообщения
-        for widget in self.chat_container.winfo_children():
-            widget.destroy()
-
-        self.chats = load_chats2()
-
-        if user_id in self.chats:
-            messages = self.chats[user_id]["messages"]
-            current_date = None
-
-            for msg in messages:
-                # Получаем дату и время сообщения
-                try:
-                    message_time = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%H:%M")
-                    message_date = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%Y-%m-%d")
-                except ValueError as e:
-                    print(f"Ошибка парсинга времени: {e}")
-                    continue  # Пропускаем сообщение с некорректным форматом времени
-
-                # Определяем, кто отправил сообщение
-                is_bot = msg["username"] == "SupportBot"
-
-                # Создаем контейнер для сообщения
-                message_frame = tk.Frame(self.chat_container, bg="#f0f0f0")
-                message_frame.pack(fill=tk.X, padx=5, pady=2)
-
-                # Внутренний фрейм для сообщения (с закругленными углами)
-                inner_frame = RoundedFrame(
-                    message_frame,
-                    radius=15,
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
-                )
-                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
-                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
-
-                # Добавляем текст сообщения
-                message_text = tk.Text(
-                    inner_frame,
-                    wrap=tk.WORD,
-                    font=("Helvetica", 12),
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    relief=tk.FLAT,
-                    height=1,  # Начальная высота
-                )
-                message_text.insert(tk.END, msg["message"])
-                message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
-                message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
-                message_text.bind("<Control-Key>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
-                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
-
-                # Привязка колесика мыши к Canvas
-                self.bind_mousewheel(message_text, self.on_mousewheel_chat)
-
-                # Обновляем ширину текстового поля при изменении размера окна
-                self.update_message_width(message_text)
-
-                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
-                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt))
-
-                # Добавляем время отправки (внутри контейнера сообщения)
-                time_label = tk.Label(
-                    inner_frame,
-                    text=message_time,
-                    font=("Helvetica", 10, "italic"),
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    fg="green",
-                )
-                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5), anchor="se")  # Выравниваем время по правому нижнему углу
-
-                # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
-                if not is_bot and message_date != current_date:
-                    current_date = message_date
-                    date_label = tk.Label(
-                        self.chat_container,
-                        text=current_date,
-                        font=("Helvetica", 10, "bold"),
-                        bg="#f0f0f0",
-                        fg="gray",
-                    )
-                    date_label.pack(fill=tk.X, pady=(10, 5), anchor="w")
-
-        # Обновляем область прокрутки
-        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
-
-        # Устанавливаем фокус на поле ввода сообщения
-        self.chat_input.focus_set()
-
     def update_message_width(self, message_text):
         """Обновляет ширину текстового поля в зависимости от ширины окна."""
         window_width = self.root.winfo_width()
@@ -432,7 +396,7 @@ class ChatApp:
         message_text.config(width=message_width)
 
         # Обновляем высоту текстового поля в зависимости от количества строк
-        message_text_height = int(len(message_text.get("1.0", tk.END)))/int((window_width - 550) / 10)
+        message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10)
         message_text.config(height=message_text_height)
 
         # Выводим текст сообщения для отладки
@@ -524,44 +488,316 @@ class ChatApp:
             elif event.keycode in (67, 99):  # Ctrl+C
                 self.copy_text_event(event)
 
-#-------------------------------------------------------------------------------------------------------------------------------
+    def open_chat(self, user_id):
+        """Открывает чат с выбранным пользователем."""
+        self.current_user_id = user_id
+        user = self.users[user_id]
+        print(user)
+
+        # Обновляем информацию о пользователе в header_frame
+        self.update_user_info(user)
+
+        # Очищаем чат и загружаем сообщения
+        for widget in self.chat_container.winfo_children():
+            widget.destroy()
+
+        self.chats = load_chats2()
+
+        if user_id in self.chats:
+            messages = self.chats[user_id]["messages"]
+            current_date = None
+
+            for msg in messages:
+                # Получаем дату и время сообщения
+                try:
+                    message_time = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%H:%M")
+                    message_date = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%Y-%m-%d")
+                except ValueError as e:
+                    print(f"Ошибка парсинга времени: {e}")
+                    continue  # Пропускаем сообщение с некорректным форматом времени
+
+                # Определяем, кто отправил сообщение
+                is_bot = msg["username"] == "SupportBot"
+
+                # Создаем контейнер для сообщения
+                message_frame = tk.Frame(self.chat_container, bg="#f0f0f0")
+                message_frame.pack(fill=tk.X, padx=5, pady=2)
+
+                # Внутренний фрейм для сообщения (с закругленными углами)
+                inner_frame = RoundedFrame(
+                    message_frame,
+                    radius=15,
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
+                )
+                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
+                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
+
+                # Добавляем текст сообщения
+                message_text = tk.Text(
+                    inner_frame,
+                    wrap=tk.WORD,
+                    font=("Helvetica", 12),
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",
+                    relief=tk.FLAT,
+                    height=1,  # Начальная высота
+                )
+                message_text.insert(tk.END, msg["message"])
+                message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
+                message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
+                message_text.bind("<Control-Key>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
+                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
+
+                # Привязка колесика мыши к Canvas
+                self.bind_mousewheel(message_text, self.on_mousewheel_chat)
+
+                # Обновляем ширину текстового поля при изменении размера окна
+                self.update_message_width(message_text)
+
+                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
+                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt))
+
+                # Добавляем время отправки (внутри контейнера сообщения)
+                time_label = tk.Label(
+                    inner_frame,
+                    text=message_time,
+                    font=("Helvetica", 10, "italic"),
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",
+                    fg="green",
+                )
+                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5),
+                                anchor="se")  # Выравниваем время по правому нижнему углу
+
+                # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
+                if not is_bot and message_date != current_date:
+                    current_date = message_date
+                    date_label = tk.Label(
+                        self.chat_container,
+                        text=current_date,
+                        font=("Helvetica", 10, "bold"),
+                        bg="#f0f0f0",
+                        fg="gray",
+                    )
+                    date_label.pack(fill=tk.X, pady=(10, 5), anchor="w")
+
+        # Обновляем область прокрутки
+        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+        # Устанавливаем фокус на поле ввода сообщения
+        self.chat_input.focus_set()
+
+        # Обновляем состояние кнопки Замутить/Размутить
+        if self.users[user_id].get("mute", False):
+            self.mute_button.config(text="Размутить")
+        else:
+            self.mute_button.config(text="Замутить")
+
+        # Обновляем цвет рамки аватара в header_frame
+        if user.get("mute", False):
+            self.avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+            if self.mute_end_label:
+                self.mute_end_label.config(text=f"Мут до: {user['mute_end']}")
+            else:
+                self.mute_end_label = tk.Label(self.user_info_frame, text=f"Мут до: {user['mute_end']}",
+                                               font=("Helvetica", 10), anchor="w", fg="red")
+                self.mute_end_label.pack(fill=tk.X)
+        else:
+            self.avatar_label.config(highlightbackground=None, highlightcolor=None, highlightthickness=0)
+            if self.mute_end_label:
+                self.mute_end_label.pack_forget()
+                self.mute_end_label = None
+
+    def toggle_mute(self):
+        """Переключает состояние мута пользователя."""
+        if not self.current_user_id:
+            return
+
+        user = self.users[self.current_user_id]
+        if user.get("mute", False):
+            self.unmute_user()
+        else:
+            self.mute_user()
+
+    def mute_user(self):
+        """Открывает окно для настройки мута пользователя."""
+        mute_window = tk.Toplevel(self.root)
+        mute_window.title("Замутить пользователя")
+
+        tk.Label(mute_window, text="Время (дни часы минуты секунды):").pack(pady=5)
+        mute_time_entry = tk.Entry(mute_window)
+        mute_time_entry.pack(pady=5)
+        mute_time_entry.insert(0, "00 00 05 00")  # Значение по умолчанию 5 минут
+
+        tk.Label(mute_window, text="Причина:").pack(pady=5)
+        reason_entry = tk.Entry(mute_window)
+        reason_entry.pack(pady=5)
+        reason_entry.insert(0, "По рішенню адміністратора")  # Значение по умолчанию
+
+        def confirm_mute():
+            mute_time_str = mute_time_entry.get()
+            reason = reason_entry.get() or "По рішенню адміністратора"
+
+            # Разбор времени мута
+            days, hours, minutes, seconds = map(int, mute_time_str.split())
+            mute_time = timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds).total_seconds()
+
+            # Обновление данных пользователя
+            self.users[self.current_user_id]["mute"] = True
+            self.users[self.current_user_id]["mute_end"] = (datetime.now() + timedelta(seconds=mute_time)).strftime(
+                "%H:%M; %d/%m/%Y")
+            self.users[self.current_user_id]["reason"] = reason
+            self.update_user_list()
+            self.save_data2()  # Сохраняем только обновленные поля
+
+            # Отправка сообщения пользователю о мутах
+            self.send_telegram_message(self.users[self.current_user_id]["id"],
+                                       f"Вас замутили на {str(timedelta(seconds=mute_time))}\nПричина: {reason}")
+            # Закрытие окна и обновление чата
+            mute_window.destroy()
+            self.open_chat(self.current_user_id)  # Обновляем чат
+
+        tk.Button(mute_window, text="Подтвердить", command=confirm_mute).pack(pady=10)
+
+    def unmute_user(self):
+        """Открывает окно для подтверждения размута пользователя."""
+        unmute_window = tk.Toplevel(self.root)
+        unmute_window.title("Размутить пользователя")
+
+        tk.Label(unmute_window, text="Вы уверены, что хотите размутить пользователя?").pack(pady=10)
+
+        def confirm_unmute():
+            # Обновление данных пользователя
+            self.users[self.current_user_id]["mute"] = False
+            self.users[self.current_user_id]["mute_end"] = None
+            self.users[self.current_user_id]["reason"] = None
+            self.update_user_list()
+            self.save_data2()  # Сохраняем только обновленные поля
+
+            # Отправка сообщения пользователю о размутах
+            self.send_telegram_message(self.users[self.current_user_id]["id"], "Вы были размучены.")
+
+            # Закрытие окна и обновление чата
+            unmute_window.destroy()
+            self.open_chat(self.current_user_id)  # Обновляем чат
+
+        tk.Button(unmute_window, text="Подтвердить", command=confirm_unmute).pack(pady=10)
+
+    def send_telegram_message(self, user_id, message):
+        """Отправляет сообщение пользователю в Telegram"""
+        # Здесь должен быть код для отправки сообщения пользователю в Telegram
+        # Например, используя библиотеку requests для отправки сообщения через Telegram Bot API
+        chat_id = user_id  # Предполагается, что user_id соответствует chat_id в Telegram
+        url = f"https://api.telegram.org/bot{BOTTOCEN}/sendMessage"
+        payload = {
+            "chat_id": chat_id,
+            "text": message
+        }
+        payload = {
+            "chat_id": chat_id,
+            "text": message
+        }
+        try:
+            response = requests.post(url, json=payload)
+            response.raise_for_status()  # Проверка на ошибки HTTP
+            print("Сообщение успешно отправлено!")
+        except requests.exceptions.HTTPError as http_err:
+            print(f"Ошибка HTTP: {http_err}")
+        except Exception as err:
+            print(f"Ошибка отправки сообщения: {err}")
+
+        print("-=--=-=-=-=-=-=-=-=-=-=---=")
+        print(url)
+
+        if response.status_code != 200:
+            print(f"Ошибка отправки сообщения: {response.text}")
+
+    def edit_user_name(self, user_id):
+        """Открывает окно редактирования имени пользователя и обновляет данные."""
+        old_name = self.users[user_id]['second_name']
+        new_name = simpledialog.askstring("Изменить имя пользователя", f"Старое имя: {old_name}\nВведите новое имя:",
+                                          initialvalue=old_name)
+
+        if new_name and new_name.strip():
+            self.users[user_id]['second_name'] = new_name.strip()
+            self.update_user_list()
+            # Используем новую функцию для обновления только second_name
+            update_second_name(user_id, new_name.strip(), self.file_path)
+            self.open_chat(self.current_user_id)  # Обновляем чат
+
+    def update_user_list(self):
+        """Обновляет список пользователей."""
+        for user_id, user_frame in self.user_buttons.items():
+            for widget in user_frame.winfo_children():
+                widget.destroy()
+
+            avatar = get_user_avatar(user_id)
+            if avatar:
+                avatar = avatar.resize((40, 40))
+                avatar_image = ImageTk.PhotoImage(avatar)
+                avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
+                avatar_label.image = avatar_image
+                avatar_label.pack(side=tk.LEFT, padx=5)
+                if self.users[user_id].get("mute", False):
+                    avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+
+            user_label = tk.Label(user_frame,
+                                  text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
+                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
+            user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            edit_button.pack(side=tk.RIGHT, padx=5)
+
+    def update_second_name(user_id, new_second_name, file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+
+            user_found = False
+            for user in data['users']:
+                if user['id'] == user_id:
+                    user['second_name'] = new_second_name
+                    user_found = True
+                    break
+
+            if user_found:
+                with open(file_path, 'w', encoding='utf-8') as file:
+                    json.dump(data, file, ensure_ascii=False, indent=4)
+                print(f"Имя пользователя с ID {user_id} успешно обновлено.")
+            else:
+                print(f"Пользователь с ID {user_id} не найден.")
+
+        except Exception as e:
+            print(f"Ошибка при обновлении имени пользователя: {e}")
 
 
-
-
-
-
-
-
-
-
-
+# -------------------------------------------------------------------------------------------------------------------------------
 
 
 # Хешируем пароль "12" через SHA256
 VALID_USERNAME = "Skeleton"
 VALID_PASSWORD_HASH = hashlib.sha256("12".encode()).hexdigest()
 
-
-
-
-
 with open(DATA_FILE, "r", encoding="utf-8") as file:
     config = json.load(file)
+
 
 def get_current_time_kiev():
     kiev_tz = pytz.timezone('Europe/Kiev')
     now = datetime.now(kiev_tz)
     return now.strftime("%H:%M; %d/%m/%Y")
 
+
 def save_data(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
 
 def load_sent_messages():
     with open(DATA_FILE, "r", encoding="utf-8") as file:
         data = json.load(file)
     return data.get("sent_messages", {})
+
 
 def save_sent_messages(sent_messages):
     with open(DATA_FILE, "r", encoding="utf-8") as file:
@@ -569,6 +805,7 @@ def save_sent_messages(sent_messages):
     data["sent_messages"] = sent_messages
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+
 
 def load_muted_users_from_file(file_path=DATA_FILE):
     with open(file_path, "r", encoding="utf-8") as file:
@@ -589,6 +826,7 @@ def load_muted_users_from_file(file_path=DATA_FILE):
             }
     return muted_users
 
+
 def load_users_info(json_file=DATA_FILE):
     try:
         with open(json_file, 'r', encoding='utf-8') as f:
@@ -601,12 +839,15 @@ def load_users_info(json_file=DATA_FILE):
         print("Помилка: некорректний формат JSON.")
         return []
 
+
 def load_chat_id_from_file(file_path=DATA_FILE):
     with open(file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
     chat_id = data.get("chat_id")
+    print(file_path)
     return chat_id
+
 
 def load_bottocen_from_file(file_path=DATA_FILE):
     with open(file_path, "r", encoding="utf-8") as file:
@@ -614,6 +855,7 @@ def load_bottocen_from_file(file_path=DATA_FILE):
 
     bot_token = data.get("bot_token")
     return bot_token
+
 
 def update_data_json(data):
     with open(DATA_FILE, "w") as file:
@@ -625,9 +867,8 @@ muted_users = load_muted_users_from_file()
 
 CREATOR_CHAT_ID = load_chat_id_from_file()
 BOTTOCEN = load_bottocen_from_file()
+print(123, BOTTOCEN)
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOTTOCEN}/"
-
-
 
 
 def load_users(file_path=DATA_FILE):
@@ -673,6 +914,7 @@ def load_data(filename):
     with open(filename, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def load_chats():
     try:
         with open(CHATS_FILE, "r", encoding="utf-8") as file:
@@ -680,10 +922,12 @@ def load_chats():
     except FileNotFoundError:
         return {}
 
+
 # Функция для сохранения чатов в файл
 def save_chats(chats):
     with open(CHATS_FILE, "w", encoding="utf-8") as file:
         json.dump(chats, file, ensure_ascii=False, indent=4)
+
 
 # Сохранение сообщений в файл
 def save_message_to_chat(message_id, user_id, text):
@@ -698,6 +942,7 @@ def save_message_to_chat(message_id, user_id, text):
         "text": text
     })
     save_chats(chats)
+
 
 @app.route('/get_chat_messages')
 def get_chat_messages():
@@ -721,8 +966,6 @@ def get_chat_messages():
 
     # Отправляем их в формате JSON
     return jsonify({"messages": formatted_messages})
-
-
 
 
 @app.route('/')
@@ -801,10 +1044,10 @@ def send_message(chat_id, text):
     response = requests.post(url, json=data)
     return response.json()
 
+
 def get_user_id_by_username(username):
     with open(DATA_FILE, "r", encoding="utf-8") as file:
         data = json.load(file)
-
 
     for user in data.get("users", []):
         if user.get("username") == username:
@@ -820,13 +1063,13 @@ def send_message_route():
         data = request.get_json()
 
         username = data.get("username")  # Имя пользователя
-        message = data.get("message")    # Сообщение
+        message = data.get("message")  # Сообщение
 
         if not username or not message:
             return jsonify({"error": "Отсутствуют данные: username или message"}), 400
 
         # Получаем ID пользователя
-        #user_id = 1840233118#ПОЛУЧЕНИЕ АЙДИ ЧЕРЕЗ ИМЯ= app.get_users(username) НЕ РАБОТАЕТ
+        # user_id = 1840233118#ПОЛУЧЕНИЕ АЙДИ ЧЕРЕЗ ИМЯ= app.get_users(username) НЕ РАБОТАЕТ
         user_id = get_user_id_by_username(username)
         if not user_id:
             return jsonify({"error": f"Не найден пользователь с именем {username}"}), 404
@@ -844,7 +1087,6 @@ def send_message_route():
         return jsonify({"error": f"Ошибка сервера: {str(e)}"}), 500
 
 
-
 def get_avatar(user_id):
     """ Получаем аватар пользователя или дефолтное изображение. """
     response = requests.get(f"{TELEGRAM_API_URL}getUserProfilePhotos", params={"user_id": user_id})
@@ -852,10 +1094,12 @@ def get_avatar(user_id):
 
     if data["ok"] and data["result"]["total_count"] > 0:
         file_id = data["result"]["photos"][0][0]["file_id"]
-        file_path = requests.get(f"{TELEGRAM_API_URL}getFile", params={"file_id": file_id}).json()["result"]["file_path"]
+        file_path = requests.get(f"{TELEGRAM_API_URL}getFile", params={"file_id": file_id}).json()["result"][
+            "file_path"]
         return f"https://api.telegram.org/file/bot{BOTTOCEN}/{file_path}"
 
     return "/static/DefaultAvatar.png"
+
 
 def get_all_avatars(users):
     """ Получаем аватары для всех пользователей """
@@ -863,6 +1107,7 @@ def get_all_avatars(users):
     for user in users:
         avatars[user["id"]] = get_avatar(user["id"])
     return avatars
+
 
 @app.route("/get_avatar/<int:user_id>")
 def avatar(user_id):
@@ -886,9 +1131,11 @@ unread_messages_data = {
     "6222116355": 5,  # У пользователя с id=2 есть 5 непрочитанных сообщений
 }
 
+
 @app.route('/check_unread_messages', methods=['GET'])
 def check_unread_messages():
     return jsonify(unread_messages_data)  # Отправляем данные в JSON-формате
+
 
 @app.route("/mark_as_read", methods=["POST"])
 def mark_as_read():
@@ -908,6 +1155,7 @@ def mark_as_read():
 
     return jsonify({"status": "error", "message": "Сообщение не найдено"}), 404
 
+
 def get_unread_counts():
     with open("chats.json", "r", encoding="utf-8") as file:
         messages = json.load(file)
@@ -920,31 +1168,10 @@ def get_unread_counts():
 
     return unread_counts
 
+
 @app.route("/get_unread_counts")
 def unread_counts():
     return jsonify(get_unread_counts())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 async def start(update: Update, context):
@@ -1007,6 +1234,7 @@ async def start(update: Update, context):
         reply_markup=reply_markup
     )
 
+
 async def rate(update: Update, context):
     user_id = update.message.from_user.id
 
@@ -1037,6 +1265,7 @@ async def rate(update: Update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(f"{rating_text}\nОберіть оцінку:", reply_markup=reply_markup)
+
 
 async def button_callback(update: Update, context):
     query = update.callback_query
@@ -1091,6 +1320,7 @@ async def button_callback(update: Update, context):
         f"Дякуємо за ваш відгук! Ваша оцінка: {new_rating}⭐️\nЗагальна оцінка: {round(average_rating, 1)}⭐️"
     )
 
+
 async def button(update: Update, context):
     global total_score, num_of_ratings
 
@@ -1121,14 +1351,15 @@ async def button(update: Update, context):
     await query.edit_message_text(
         f"Дякуємо за ваш відгук! Ваша оцінка: {selected_rate}⭐️\nЗагальна оцінка: {round(average_rating, 1)}⭐️")
 
+
 async def auto_delete_message(bot, chat_id, message_id, delay):
     await asyncio.sleep(delay)
     await bot.delete_message(chat_id=chat_id, message_id=message_id)
 
+
 async def message(update: Update, context):
     user_id = update.message.from_user.id
     muted_users = load_muted_users_from_file()
-
 
     if user_id in muted_users and muted_users[user_id]['expiration'] > datetime.now():
         reply = await update.message.reply_text("Ви в муті й не можете надсилати повідомлення.")
@@ -1145,6 +1376,7 @@ async def message(update: Update, context):
     await asyncio.create_task(
         auto_delete_message(context.bot, chat_id=reply.chat.id, message_id=reply.message_id, delay=5))
 
+
 async def stopmessage(update: Update, context):
     if context.user_data.get('waiting_for_message'):
         reply = await update.message.reply_text("Ви завершили введення повідомлень.")
@@ -1153,6 +1385,7 @@ async def stopmessage(update: Update, context):
             auto_delete_message(context.bot, chat_id=reply.chat.id, message_id=reply.message_id, delay=5))
     else:
         await update.message.reply_text("Ви не в режимі введення повідомлень.")
+
 
 async def help(update: Update, context):
     if str(update.message.chat.id) == str(CREATOR_CHAT_ID):
@@ -1193,11 +1426,13 @@ async def help(update: Update, context):
 
     await update.message.reply_text(help_text)
 
+
 async def fromus(update: Update, context):
     await update.message.reply_text(
         "*Skeleton*  Написв бота\nПортфоліо:  ```https://www.linkedin.com/in/artem-k-972a41344/``` \n Телеграм канал з усіма проєктами: ```https://t.me/AboutMyProjects```\n По всім питанням пишіть в цього бота",
         parse_mode="MarkdownV2"
     )
+
 
 async def info(update: Update, context: CallbackContext):
     with open(DATA_FILE, "r", encoding="utf-8") as file:
@@ -1224,6 +1459,7 @@ async def update_website(message_info):
             print(f"❌ Ошибка {response.status_code}: {response.text}")
     except Exception as e:
         print(f"Ошибка при отправке данных на сайт: {e}")
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sent_messages = load_sent_messages()
@@ -1258,7 +1494,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         "first_name": row[1],
                         "second_name": row[2],
                         "username": row[3],
-                        "join_date": row[4].strftime("%H:%M; %d/%m/%Y") if isinstance(row[3], datetime) else str(row[4]),
+                        "join_date": row[4].strftime("%H:%M; %d/%m/%Y") if isinstance(row[3], datetime) else str(
+                            row[4]),
                         "rating": int(row[5]) if row[5] is not None else 0,
                         "mute": bool(row[6]),
                         "mute_end": row[7].strftime("%H:%M; %d/%m/%Y") if isinstance(row[6], datetime) else str(row[7]),
@@ -1389,7 +1626,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         elif update.message.document:
                             document_file_id = update.message.document.file_id
                             caption = update.message.caption if update.message.caption else ''
-                            await context.bot.send_document(chat_id=original_user_id, document=document_file_id, caption=caption)
+                            await context.bot.send_document(chat_id=original_user_id, document=document_file_id,
+                                                            caption=caption)
                         elif update.message.sticker:
                             sticker_file_id = update.message.sticker.file_id
                             caption = update.message.caption if update.message.caption else ''
@@ -1412,7 +1650,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         else:
                             caption = update.message.caption if update.message.caption else ''
                             await context.bot.send_message(chat_id=original_user_id, text=reply_text)
-                        await update.message.reply_text(f"Користувачу { user_name } було надіслано повідомлення")
+                        await update.message.reply_text(f"Користувачу {user_name} було надіслано повідомлення")
                         sent_messages[update.message.message_id] = update.message.from_user.id
                         save_sent_messages(sent_messages)
 
@@ -1458,7 +1696,6 @@ async def mute(update: Update, context: CallbackContext):
     if user["mute"]:
         await update.message.reply_text(f"Користувач {user['first_name']} вже був замучений.")
 
-
     user["mute"] = True
     user["mute_end"] = (datetime.now() + timedelta(seconds=mute_time)).strftime("%H:%M; %d/%m/%Y")
     user["reason"] = reason
@@ -1472,6 +1709,7 @@ async def mute(update: Update, context: CallbackContext):
                                    text=f"Вас замутили на {str(timedelta(seconds=mute_time))}\nПричина: {reason}")
     await update.message.reply_text(f"Користувач @{user['username']} замучений.")
 
+
 async def unmute(update: Update, context: CallbackContext):
     user = update.message.from_user.username
     if not is_programmer(user) and not is_admin(user):
@@ -1482,11 +1720,10 @@ async def unmute(update: Update, context: CallbackContext):
         await update.message.reply_text("Використовуйте: /unmute <користувач>")
         return
 
-
-
     username = context.args[0].lstrip('@')
 
-    user = next((u for u in config["users"] if u["username"].lower() == username.lower() or str(u["id"]) == username), None)
+    user = next((u for u in config["users"] if u["username"].lower() == username.lower() or str(u["id"]) == username),
+                None)
 
     if user and user["mute"]:
         user["mute"] = False
@@ -1497,10 +1734,12 @@ async def unmute(update: Update, context: CallbackContext):
         save_data(config)
 
         mute_permissions = ChatPermissions(can_send_messages=True)
-        await context.bot.restrict_chat_member(chat_id=config["chat_id"], user_id=user["id"], permissions=mute_permissions)
+        await context.bot.restrict_chat_member(chat_id=config["chat_id"], user_id=user["id"],
+                                               permissions=mute_permissions)
         await update.message.reply_text(f"Користувач @{user['username']} був розмучений.")
     else:
         await update.message.reply_text(f"Користувач {username} не знайден або не був замучений.")
+
 
 async def admin(update: Update, context: CallbackContext):
     user = update.message.from_user.username
@@ -1520,6 +1759,7 @@ async def admin(update: Update, context: CallbackContext):
         save_data(config)
         await update.message.reply_text(f"Користувач @{username} додан в список администраторів.")
 
+
 async def deleteadmin(update: Update, context: CallbackContext):
     user = update.message.from_user.username
     if not is_programmer(user):
@@ -1538,6 +1778,7 @@ async def deleteadmin(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text(f"Користувач @{username} не знайден.")
 
+
 async def programier(update: Update, context: CallbackContext):
     user = update.message.from_user.username
     if is_programmer(user):
@@ -1553,6 +1794,7 @@ async def programier(update: Update, context: CallbackContext):
             await update.message.reply_text("Використовуйте: /programier @username")
     else:
         await update.message.reply_text("Ця команда доступна лише адміністраторам.")
+
 
 async def deleteprogramier(update: Update, context: CallbackContext):
     user = update.message.from_user.username
@@ -1571,6 +1813,7 @@ async def deleteprogramier(update: Update, context: CallbackContext):
             await update.message.reply_text("Використовуйте: /deleteprogramier @username")
     else:
         await update.message.reply_text("Ця команда доступна лише адміністраторам.")
+
 
 async def mutelist(update: Update, context):
     user = update.message.from_user.username
@@ -1622,6 +1865,7 @@ async def mutelist(update: Update, context):
         response += "-------------------------------------------------------------------------\n"
 
     await update.message.reply_text(response)
+
 
 async def alllist(update: Update, context: CallbackContext):
     global mute_symbol
@@ -1705,6 +1949,7 @@ async def alllist(update: Update, context: CallbackContext):
 
     await update.message.reply_text(response)
 
+
 async def allmessage(update: Update, context):
     user = update.message.from_user.username
 
@@ -1736,8 +1981,10 @@ async def allmessage(update: Update, context):
 
     await update.message.reply_text("Повідомлення відправлено всім користувачам.")
 
+
 def is_programmer(username):
     return username in config["programmers"]
+
 
 def is_admin(username):
     return username in config["admins"]
@@ -1759,7 +2006,8 @@ async def get_alllist(update: Update, context: CallbackContext) -> None:
         muted_df = all_users_df[all_users_df["mute"] == True]
 
         muted_df.loc[:, "mute_end"] = muted_df["mute_end"].apply(
-            lambda x: datetime.strptime(x.replace(";", " "), "%H:%M %d/%m/%Y").strftime("%H:%M; %d/%m/%Y") if isinstance(x, str) else ""
+            lambda x: datetime.strptime(x.replace(";", " "), "%H:%M %d/%m/%Y").strftime(
+                "%H:%M; %d/%m/%Y") if isinstance(x, str) else ""
         )
 
         admins_df = pd.DataFrame(data.get("admins", []), columns=["Admins"])
@@ -1795,7 +2043,8 @@ async def get_alllist(update: Update, context: CallbackContext) -> None:
 
         for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=1, max_col=9):
             username_cell = row[3]
-            mute_status = next((user['mute'] for user in data["users"] if user["username"] == username_cell.value), False)
+            mute_status = next((user['mute'] for user in data["users"] if user["username"] == username_cell.value),
+                               False)
 
             fill_color = red_fill if mute_status else yellow_fill
 
@@ -1809,6 +2058,7 @@ async def get_alllist(update: Update, context: CallbackContext) -> None:
     except Exception as e:
         await update.message.reply_text(f"Error: {e}")
 
+
 async def set_alllist(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user.username
 
@@ -1818,7 +2068,8 @@ async def set_alllist(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text("Будь ласка пришліть Excel file з данними.")
     context.user_data["awaiting_file"] = True
 
-async def set_default_commands(application):
+
+"""async def set_default_commands(application):
     commands = [
         BotCommand("start", "Запустити бота"),
         BotCommand("rate", "Залишити відгук"),
@@ -1838,6 +2089,7 @@ async def set_creator_commands(application):
         BotCommand("info", "Показати інформацію про програмістів та адміністраторів"),
         BotCommand("get_alllist", "Отримати Exel файл з користувачами"),
         BotCommand("set_alllist", "Записати Exel файл з користувачами"),
+        print(CREATOR_CHAT_ID)
     ]
     await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=CREATOR_CHAT_ID))
 
@@ -1847,7 +2099,8 @@ async def set_save_commands(application):
         BotCommand("set_alllist", "Записати Exel файл з користувачами"),
         BotCommand("help", "Показати доступні команди"),
     ]
-    await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=-1002310142084))
+    await application.bot.set_my_commands(commands, scope=BotCommandScopeChat(chat_id=-1002310142084))"""
+
 
 async def send_user_list():
     try:
@@ -1862,7 +2115,8 @@ async def send_user_list():
         print(muted_df)
 
         muted_df.loc[:, "mute_end"] = muted_df["mute_end"].apply(
-            lambda x: datetime.strptime(x.replace(";", " "), "%H:%M %d/%m/%Y").strftime("%H:%M; %d/%m/%Y") if isinstance(x, str) else ""
+            lambda x: datetime.strptime(x.replace(";", " "), "%H:%M %d/%m/%Y").strftime(
+                "%H:%M; %d/%m/%Y") if isinstance(x, str) else ""
         )
 
         admins_df = pd.DataFrame(data.get("admins", []), columns=["Admins"])
@@ -1898,7 +2152,8 @@ async def send_user_list():
 
         for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=1, max_col=8):
             username_cell = row[2]
-            mute_status = next((user['mute'] for user in data["users"] if user["username"] == username_cell.value), False)
+            mute_status = next((user['mute'] for user in data["users"] if user["username"] == username_cell.value),
+                               False)
 
             fill_color = red_fill if mute_status else yellow_fill
 
@@ -1913,6 +2168,7 @@ async def send_user_list():
     except Exception as e:
         bot = Bot(token=BOTTOCEN)
         await bot.send_message(chat_id=-1002358066044, text=f"Ошибка при создании отчета: {e}")
+
 
 async def main():
     application = Application.builder().token("7677888606:AAHMm3aSt84ZQkJ0wrlH4__St3lW36-TL8g").build()
@@ -1940,10 +2196,9 @@ async def main():
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, handle_message))
 
-    await set_default_commands(application)
+    """await set_default_commands(application)
     await set_creator_commands(application)
-    await set_save_commands(application)
-
+    await set_save_commands(application)"""
 
     scheduler = AsyncIOScheduler(timezone=pytz.timezone("Europe/Kyiv"))
     scheduler.add_job(send_user_list, "cron", hour=0, minute=0)
@@ -1952,12 +2207,10 @@ async def main():
     application.run_polling()
 
 
-
-
-
 def run_flask():
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 def run_bot():
     """Запускает Telegram-бота в отдельном потоке."""
@@ -1967,7 +2220,6 @@ def run_bot():
 
 
 if __name__ == "__main__":
-
     threading.Thread(target=run_flask, daemon=True).start()
     threading.Thread(target=run_bot, daemon=True).start()
 
