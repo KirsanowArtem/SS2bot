@@ -72,23 +72,13 @@ HEADERS = {
 
 # -------------------------------------------------------------------------------------------------------------------------------
 def load_data2():
+    """Загружает данные пользователей из JSON-файла."""
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
     print(DATA_FILE)
-    return {user["id"]: user for user in data["users"]}
+    return {user["id"]: user for user in data["users"]}, data
 
 
-def save_data2(self):
-    """Сохраняет данные в JSON-файл, обновляя только нужные поля."""
-    try:
-        # Обновляем данные пользователей в self.data
-        self.data["users"] = list(self.users.values())
-
-        # Сохраняем обновленные данные обратно в файл
-        with open("users.json", "w", encoding="utf-8") as file:
-            json.dump(self.data, file, ensure_ascii=False, indent=4)
-    except Exception as e:
-        print(f"Ошибка при сохранении данных: {e}")
 
 
 def load_chats2():
@@ -122,7 +112,6 @@ def check_avatar(user_id):
     try:
         response = requests.get(f"{TELEGRAM_API_URL}getUserProfilePhotos?user_id={user_id}&limit=1", timeout=5)
         data = response.json()
-        print(BOTTOCEN)
 
         if data.get("result", {}).get("photos"):
             file_id = data["result"]["photos"][0][0]["file_id"]
@@ -255,7 +244,7 @@ class ChatApp:
         self.root = root
         self.root.title("Пользователи и чат")
 
-        self.users = load_data2()
+        self.users, self.data = load_data2()
         self.chats = load_chats2()
         self.file_path = 'data.json'
         self.bot_token = BOTTOCEN  # Замените на ваш токен бота
@@ -302,6 +291,8 @@ class ChatApp:
                 avatar_label.pack(side=tk.LEFT, padx=5)
                 if user.get("mute", False):
                     avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+                else:
+                    avatar_label.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
 
             user_label = tk.Label(user_frame, text=f"{user['second_name']} ({user['username']})",
                                   font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
@@ -399,9 +390,6 @@ class ChatApp:
         message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10)
         message_text.config(height=message_text_height)
 
-        # Выводим текст сообщения для отладки
-        print(message_text.get("1.0", tk.END))
-
     def update_user_info(self, user):
         """Обновляет информацию о пользователе в header_frame."""
         # Загружаем аватар пользователя
@@ -492,7 +480,6 @@ class ChatApp:
         """Открывает чат с выбранным пользователем."""
         self.current_user_id = user_id
         user = self.users[user_id]
-        print(user)
 
         # Обновляем информацию о пользователе в header_frame
         self.update_user_info(user)
@@ -606,6 +593,23 @@ class ChatApp:
                 self.mute_end_label.pack_forget()
                 self.mute_end_label = None
 
+    def save_data2(self):
+        """Сохраняет данные в JSON-файл, обновляя только нужные поля."""
+        try:
+            # Обновляем данные пользователей
+            self.data["users"] = list(self.users.values())
+
+            # Убедимся, что muted_users существует в self.data
+            if "muted_users" not in self.data:
+                self.data["muted_users"] = {}
+
+            # Сохраняем обновленные данные обратно в файл
+            with open(self.file_path, "w", encoding="utf-8") as file:
+                json.dump(self.data, file, ensure_ascii=False, indent=4)
+        except Exception as e:
+            print(f"Ошибка при сохранении данных: {e}")
+
+
     def toggle_mute(self):
         """Переключает состояние мута пользователя."""
         if not self.current_user_id:
@@ -645,14 +649,23 @@ class ChatApp:
             self.users[self.current_user_id]["mute_end"] = (datetime.now() + timedelta(seconds=mute_time)).strftime(
                 "%H:%M; %d/%m/%Y")
             self.users[self.current_user_id]["reason"] = reason
-            self.update_user_list()
-            self.save_data2()  # Сохраняем только обновленные поля
+
+            # Добавляем username в muted_users
+            username = self.users[self.current_user_id]["username"]
+            if "muted_users" not in self.data:
+                self.data["muted_users"] = {}
+            self.data["muted_users"][username] = True  # Добавляем запись "username": true
+
+
+            self.save_data2()  # Сохраняем изменения
 
             # Отправка сообщения пользователю о мутах
             self.send_telegram_message(self.users[self.current_user_id]["id"],
                                        f"Вас замутили на {str(timedelta(seconds=mute_time))}\nПричина: {reason}")
+
             # Закрытие окна и обновление чата
             mute_window.destroy()
+            self.update_user_list()
             self.open_chat(self.current_user_id)  # Обновляем чат
 
         tk.Button(mute_window, text="Подтвердить", command=confirm_mute).pack(pady=10)
@@ -669,17 +682,24 @@ class ChatApp:
             self.users[self.current_user_id]["mute"] = False
             self.users[self.current_user_id]["mute_end"] = None
             self.users[self.current_user_id]["reason"] = None
-            self.update_user_list()
-            self.save_data2()  # Сохраняем только обновленные поля
+
+            # Удаляем username из muted_users
+            username = self.users[self.current_user_id]["username"]
+            if "muted_users" in self.data and username in self.data["muted_users"]:
+                del self.data["muted_users"][username]  # Удаляем запись полностью
+
+            self.save_data2()  # Сохраняем изменения
 
             # Отправка сообщения пользователю о размутах
             self.send_telegram_message(self.users[self.current_user_id]["id"], "Вы были размучены.")
 
             # Закрытие окна и обновление чата
             unmute_window.destroy()
+            self.update_user_list()
             self.open_chat(self.current_user_id)  # Обновляем чат
 
         tk.Button(unmute_window, text="Подтвердить", command=confirm_unmute).pack(pady=10)
+
 
     def send_telegram_message(self, user_id, message):
         """Отправляет сообщение пользователю в Telegram"""
@@ -771,6 +791,7 @@ class ChatApp:
             print(f"Ошибка при обновлении имени пользователя: {e}")
 
 
+
 # -------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -845,7 +866,6 @@ def load_chat_id_from_file(file_path=DATA_FILE):
         data = json.load(file)
 
     chat_id = data.get("chat_id")
-    print(file_path)
     return chat_id
 
 
@@ -867,7 +887,6 @@ muted_users = load_muted_users_from_file()
 
 CREATOR_CHAT_ID = load_chat_id_from_file()
 BOTTOCEN = load_bottocen_from_file()
-print(123, BOTTOCEN)
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOTTOCEN}/"
 
 
@@ -1076,10 +1095,8 @@ def send_message_route():
 
         # Отправляем сообщение через Telegram-бота
         result = send_message(user_id, message)
-        print(2)
 
         save_message_to_json(user_id, "SupportBot", message)
-        print(3)
 
         return jsonify(result)
 
@@ -1120,7 +1137,6 @@ def users_list():
     chats_data = load_chats()
 
     users = chats_data["users"]
-    print(users)
     avatars = get_all_avatars(users)  # Получаем аватары сразу для всех
 
     return render_template("users.html", users=users, avatars=avatars)
@@ -1588,11 +1604,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             # Добавляем сообщение в список
 
-            print(12)
-            print(chats_data)
-            print(chats_data[chat_id_str])
-            print(chats_data[chat_id_str]["messages"])
-            print(21)
             chats_data[chat_id_str]["messages"].append(message_info)
 
             # Сохраняем обновленные данные в chats.json

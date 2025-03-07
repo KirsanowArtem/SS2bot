@@ -84,6 +84,30 @@
                 "message": "78878787878787878787878787878778",
                 "time_sent": "17:27; 07/03/2025",
                 "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "1\n\n1\n1\n1\n1\n1",
+                "time_sent": "22:56; 07/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "1\n1\n1\n\n12\n\n\n2\n2",
+                "time_sent": "22:57; 07/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "4\n4\n4",
+                "time_sent": "22:59; 07/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "554\n4\n\n4\n4\n4",
+                "time_sent": "23:02; 07/03/2025",
+                "read": false
             }
         ]
     },
@@ -117,6 +141,24 @@
                 "username": "SupportBot",
                 "message": "хах",
                 "time_sent": "22:51; 01/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "вот \nтак \nработает\nбот",
+                "time_sent": "22:45; 07/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "ооо",
+                "time_sent": "23:03; 07/03/2025",
+                "read": false
+            },
+            {
+                "username": "SupportBot",
+                "message": "еше минус баг",
+                "time_sent": "23:03; 07/03/2025",
                 "read": false
             }
         ]

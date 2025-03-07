@@ -380,14 +380,14 @@ class ChatApp:
         """Обработчик события прокрутки колесика мыши для чата."""
         self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-    def update_message_width(self, message_text):
+    def update_message_width(self, message_text,height):
         """Обновляет ширину текстового поля в зависимости от ширины окна."""
         window_width = self.root.winfo_width()
         message_width = int((window_width - 550) / 10)  # Уменьшаем длину сообщения
         message_text.config(width=message_width)
 
         # Обновляем высоту текстового поля в зависимости от количества строк
-        message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10)
+        message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10)+height
         message_text.config(height=message_text_height)
 
     def update_user_info(self, user):
@@ -526,7 +526,7 @@ class ChatApp:
                     font=("Helvetica", 12),
                     bg="#e0e0e0" if is_bot else "#d1e7ff",
                     relief=tk.FLAT,
-                    height=1,  # Начальная высота
+                    height=len(msg["message"].split("\n")),  # Высота зависит от количества строк
                 )
                 message_text.insert(tk.END, msg["message"])
                 message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
@@ -538,10 +538,10 @@ class ChatApp:
                 self.bind_mousewheel(message_text, self.on_mousewheel_chat)
 
                 # Обновляем ширину текстового поля при изменении размера окна
-                self.update_message_width(message_text)
+                self.update_message_width(message_text, len(msg["message"].split("\n")))
 
                 # Привязываем событие изменения размера окна к обновлению ширины текстового поля
-                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt))
+                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt,len(msg["message"].split("\n"))))
 
                 # Добавляем время отправки (внутри контейнера сообщения)
                 time_label = tk.Label(
