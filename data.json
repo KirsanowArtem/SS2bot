@@ -76,6 +76,17 @@
             "mute": false,
             "mute_end": null,
             "reason": null
+        },
+        {
+            "id": "1128814580",
+            "username": "HelgaKirsanova",
+            "first_name": "Ольга",
+            "second_name": "Ольга",
+            "join_date": "22:09; 08/03/2025",
+            "rating": 0,
+            "mute": false,
+            "mute_end": null,
+            "reason": null
         }
     ],
     "muted_users": {

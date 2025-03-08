@@ -299,6 +299,11 @@ class ChatApp:
             user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
             user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
 
+            unread_count = self.get_unread_message_count(user_id)
+            if unread_count > 0:
+                unread_label = tk.Label(user_frame, text="🔵", bg="blue", fg="white", font=("Helvetica", 12, "bold"))
+                unread_label.pack(side=tk.RIGHT, padx=5)
+
             edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
             edit_button.pack(side=tk.RIGHT, padx=5)
 
@@ -415,7 +420,9 @@ class ChatApp:
         message = self.chat_input.get("1.0", tk.END).strip()
         if message:
             # Сохраняем сообщение
-            send_message(self.current_user_id, message)
+            url = f"https://api.telegram.org/bot{BOTTOCEN}/sendMessage"
+            data = {"chat_id": self.current_user_id, "text": message}
+            response = requests.post(url, json=data)
             save_message_to_json(self.current_user_id, "SupportBot", message)
 
             # Добавляем сообщение в чат
@@ -476,123 +483,6 @@ class ChatApp:
             elif event.keycode in (67, 99):  # Ctrl+C
                 self.copy_text_event(event)
 
-    def open_chat(self, user_id):
-        """Открывает чат с выбранным пользователем."""
-        self.current_user_id = user_id
-        user = self.users[user_id]
-
-        # Обновляем информацию о пользователе в header_frame
-        self.update_user_info(user)
-
-        # Очищаем чат и загружаем сообщения
-        for widget in self.chat_container.winfo_children():
-            widget.destroy()
-
-        self.chats = load_chats2()
-
-        if user_id in self.chats:
-            messages = self.chats[user_id]["messages"]
-            current_date = None
-
-            for msg in messages:
-                # Получаем дату и время сообщения
-                try:
-                    message_time = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%H:%M")
-                    message_date = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%Y-%m-%d")
-                except ValueError as e:
-                    print(f"Ошибка парсинга времени: {e}")
-                    continue  # Пропускаем сообщение с некорректным форматом времени
-
-                # Определяем, кто отправил сообщение
-                is_bot = msg["username"] == "SupportBot"
-
-                # Создаем контейнер для сообщения
-                message_frame = tk.Frame(self.chat_container, bg="#f0f0f0")
-                message_frame.pack(fill=tk.X, padx=5, pady=2)
-
-                # Внутренний фрейм для сообщения (с закругленными углами)
-                inner_frame = RoundedFrame(
-                    message_frame,
-                    radius=15,
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
-                )
-                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
-                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
-
-                # Добавляем текст сообщения
-                message_text = tk.Text(
-                    inner_frame,
-                    wrap=tk.WORD,
-                    font=("Helvetica", 12),
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    relief=tk.FLAT,
-                    height=len(msg["message"].split("\n")),  # Высота зависит от количества строк
-                )
-                message_text.insert(tk.END, msg["message"])
-                message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
-                message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
-                message_text.bind("<Control-Key>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
-                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
-
-                # Привязка колесика мыши к Canvas
-                self.bind_mousewheel(message_text, self.on_mousewheel_chat)
-
-                # Обновляем ширину текстового поля при изменении размера окна
-                self.update_message_width(message_text, len(msg["message"].split("\n")))
-
-                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
-                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt,len(msg["message"].split("\n"))))
-
-                # Добавляем время отправки (внутри контейнера сообщения)
-                time_label = tk.Label(
-                    inner_frame,
-                    text=message_time,
-                    font=("Helvetica", 10, "italic"),
-                    bg="#e0e0e0" if is_bot else "#d1e7ff",
-                    fg="green",
-                )
-                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5),
-                                anchor="se")  # Выравниваем время по правому нижнему углу
-
-                # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
-                if not is_bot and message_date != current_date:
-                    current_date = message_date
-                    date_label = tk.Label(
-                        self.chat_container,
-                        text=current_date,
-                        font=("Helvetica", 10, "bold"),
-                        bg="#f0f0f0",
-                        fg="gray",
-                    )
-                    date_label.pack(fill=tk.X, pady=(10, 5), anchor="w")
-
-        # Обновляем область прокрутки
-        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
-
-        # Устанавливаем фокус на поле ввода сообщения
-        self.chat_input.focus_set()
-
-        # Обновляем состояние кнопки Замутить/Размутить
-        if self.users[user_id].get("mute", False):
-            self.mute_button.config(text="Размутить")
-        else:
-            self.mute_button.config(text="Замутить")
-
-        # Обновляем цвет рамки аватара в header_frame
-        if user.get("mute", False):
-            self.avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
-            if self.mute_end_label:
-                self.mute_end_label.config(text=f"Мут до: {user['mute_end']}")
-            else:
-                self.mute_end_label = tk.Label(self.user_info_frame, text=f"Мут до: {user['mute_end']}",
-                                               font=("Helvetica", 10), anchor="w", fg="red")
-                self.mute_end_label.pack(fill=tk.X)
-        else:
-            self.avatar_label.config(highlightbackground=None, highlightcolor=None, highlightthickness=0)
-            if self.mute_end_label:
-                self.mute_end_label.pack_forget()
-                self.mute_end_label = None
-
     def save_data2(self):
         """Сохраняет данные в JSON-файл, обновляя только нужные поля."""
         try:
@@ -608,7 +498,6 @@ class ChatApp:
                 json.dump(self.data, file, ensure_ascii=False, indent=4)
         except Exception as e:
             print(f"Ошибка при сохранении данных: {e}")
-
 
     def toggle_mute(self):
         """Переключает состояние мута пользователя."""
@@ -700,7 +589,6 @@ class ChatApp:
 
         tk.Button(unmute_window, text="Подтвердить", command=confirm_unmute).pack(pady=10)
 
-
     def send_telegram_message(self, user_id, message):
         """Отправляет сообщение пользователю в Telegram"""
         # Здесь должен быть код для отправки сообщения пользователю в Telegram
@@ -743,30 +631,6 @@ class ChatApp:
             update_second_name(user_id, new_name.strip(), self.file_path)
             self.open_chat(self.current_user_id)  # Обновляем чат
 
-    def update_user_list(self):
-        """Обновляет список пользователей."""
-        for user_id, user_frame in self.user_buttons.items():
-            for widget in user_frame.winfo_children():
-                widget.destroy()
-
-            avatar = get_user_avatar(user_id)
-            if avatar:
-                avatar = avatar.resize((40, 40))
-                avatar_image = ImageTk.PhotoImage(avatar)
-                avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
-                avatar_label.image = avatar_image
-                avatar_label.pack(side=tk.LEFT, padx=5)
-                if self.users[user_id].get("mute", False):
-                    avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
-
-            user_label = tk.Label(user_frame,
-                                  text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
-                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
-            user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
-            user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
-
-            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
-            edit_button.pack(side=tk.RIGHT, padx=5)
 
     def update_second_name(user_id, new_second_name, file_path):
         try:
@@ -789,6 +653,168 @@ class ChatApp:
 
         except Exception as e:
             print(f"Ошибка при обновлении имени пользователя: {e}")
+
+
+
+
+
+
+
+    def open_chat(self, user_id):
+        """Открывает чат с выбранным пользователем."""
+        self.current_user_id = user_id
+        user = self.users[user_id]
+
+        # Обновляем информацию о пользователе в header_frame
+        self.update_user_info(user)
+
+        # Очищаем чат и загружаем сообщения
+        for widget in self.chat_container.winfo_children():
+            widget.destroy()
+
+        self.chats = load_chats2()
+
+        if user_id in self.chats:
+            messages = self.chats[user_id]["messages"]
+            current_date = None
+
+            for msg in messages:
+                # Получаем дату и время сообщения
+                try:
+                    message_time = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%H:%M")
+                    message_date = datetime.strptime(msg["time_sent"], "%H:%M; %d/%m/%Y").strftime("%Y-%m-%d")
+                except ValueError as e:
+                    print(f"Ошибка парсинга времени: {e}")
+                    continue  # Пропускаем сообщение с некорректным форматом времени
+
+                # Определяем, кто отправил сообщение
+                is_bot = msg["username"] == "SupportBot"
+
+                # Создаем контейнер для сообщения
+                message_frame = tk.Frame(self.chat_container, bg="#f0f0f0")
+                message_frame.pack(fill=tk.X, padx=5, pady=2)
+
+                # Внутренний фрейм для сообщения (с закругленными углами)
+                inner_frame = RoundedFrame(
+                    message_frame,
+                    radius=15,
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",  # Цвет фона для бота и пользователя
+                )
+                # Выравниваем внутренний фрейм по правому краю с отступом 25 пикселей
+                inner_frame.pack(side=tk.RIGHT, padx=(0, 0), pady=2)  # Отступ 25 пикселей от правого края
+
+                # Добавляем текст сообщения
+                message_text = tk.Text(
+                    inner_frame,
+                    wrap=tk.WORD,
+                    font=("Helvetica", 12),
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",
+                    relief=tk.FLAT,
+                    height=len(msg["message"].split("\n")),  # Высота зависит от количества строк
+                )
+                message_text.insert(tk.END, msg["message"])
+                message_text.config(state=tk.NORMAL)  # Позволяем выделение и копирование текста
+                message_text.bind("<Button-3>", self.show_context_menu)  # Привязываем контекстное меню
+                message_text.bind("<Control-Key>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
+                message_text.pack(side=tk.TOP, padx=10, pady=5, anchor="e")
+
+                # Привязка колесика мыши к Canvas
+                self.bind_mousewheel(message_text, self.on_mousewheel_chat)
+
+                # Обновляем ширину текстового поля при изменении размера окна
+                self.update_message_width(message_text, len(msg["message"].split("\n")))
+
+                # Привязываем событие изменения размера окна к обновлению ширины текстового поля
+                self.root.bind("<Configure>", lambda event, mt=message_text: self.update_message_width(mt, len(
+                    msg["message"].split("\n"))))
+
+                # Добавляем время отправки (внутри контейнера сообщения)
+                time_label = tk.Label(
+                    inner_frame,
+                    text=message_time,
+                    font=("Helvetica", 10, "italic"),
+                    bg="#e0e0e0" if is_bot else "#d1e7ff",
+                    fg="green",
+                )
+                time_label.pack(side=tk.RIGHT, padx=10, pady=(0, 5),
+                                anchor="se")  # Выравниваем время по правому нижнему углу
+
+                # Если дата изменилась, добавляем метку с датой (после сообщения пользователя)
+                if not is_bot and message_date != current_date:
+                    current_date = message_date
+                    date_label = tk.Label(
+                        self.chat_container,
+                        text=current_date,
+                        font=("Helvetica", 10, "bold"),
+                        bg="#f0f0f0",
+                        fg="gray",
+                    )
+                    date_label.pack(fill=tk.X, pady=(10, 5), anchor="w")
+
+        # Обновляем область прокрутки
+        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+        # Устанавливаем фокус на поле ввода сообщения
+        self.chat_input.focus_set()
+
+        self.mark_all_messages_as_read(user_id)
+        self.update_user_list()
+
+    def mark_all_messages_as_read(self, user_id):
+        chats_data = load_chats2()
+        chat_id_str = str(user_id)
+
+        if chat_id_str in chats_data:
+            for msg in chats_data[chat_id_str]["messages"]:
+                msg["read"] = True
+            chats_data[chat_id_str]["newmassages"] = 0
+
+            with open(CHATS_FILE, "w", encoding="utf-8") as file:
+                json.dump(chats_data, file, ensure_ascii=False, indent=4)
+
+    def get_unread_message_count(self, user_id):
+        chats_data = load_chats2()
+        chat_id_str = str(user_id)
+        unread_count = 0
+
+        if chat_id_str in chats_data:
+            for msg in chats_data[chat_id_str]["messages"]:
+                try:
+                    if not msg["read"]:
+                        unread_count += 1
+                except:
+                    print(msg)
+        return unread_count
+
+    def update_user_list(self):
+        """Обновляет список пользователей."""
+        for user_id, user_frame in self.user_buttons.items():
+            for widget in user_frame.winfo_children():
+                widget.destroy()
+
+            avatar = get_user_avatar(user_id)
+            if avatar:
+                avatar = avatar.resize((40, 40))
+                avatar_image = ImageTk.PhotoImage(avatar)
+                avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
+                avatar_label.image = avatar_image
+                avatar_label.pack(side=tk.LEFT, padx=5)
+                if self.users[user_id].get("mute", False):
+                    avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+
+            user_label = tk.Label(user_frame,
+                                  text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
+                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
+            user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+            unread_count = self.get_unread_message_count(user_id)
+            if unread_count > 0:
+                unread_label = tk.Label(user_frame, text=f"🔵 {unread_count}", font=("Helvetica", 12, "bold"))
+                unread_label.pack(side=tk.RIGHT, padx=5)
+
+            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            edit_button.pack(side=tk.RIGHT, padx=5)
 
 
 
@@ -948,246 +974,12 @@ def save_chats(chats):
         json.dump(chats, file, ensure_ascii=False, indent=4)
 
 
-# Сохранение сообщений в файл
-def save_message_to_chat(message_id, user_id, text):
-    chats = load_chats()
-    if message_id not in chats:
-        chats[message_id] = {
-            "user_id": user_id,
-            "messages": []
-        }
-    chats[message_id]["messages"].append({
-        "message_type": "text",
-        "text": text
-    })
-    save_chats(chats)
 
 
-@app.route('/get_chat_messages')
-def get_chat_messages():
-    user_id = request.args.get('userId')
 
-    # Загружаем данные из файла
-    with open(CHATS_FILE, 'r', encoding='utf-8') as file:
-        chats_data = json.load(file)
 
-    # Получаем сообщения для конкретного user_id
-    if str(user_id) in chats_data:
-        messages = chats_data[str(user_id)]['messages']
-    else:
-        messages = []
 
-    # Формируем ответ
-    formatted_messages = [
-        {"username": message["username"], "message": message["message"], "time_sent": message["time_sent"]}
-        for message in messages
-    ]
 
-    # Отправляем их в формате JSON
-    return jsonify({"messages": formatted_messages})
-
-
-@app.route('/')
-def index():
-    data = load_data(DATA_FILE)
-    users = data['users']
-    total_users = len(users)
-    avg_rating = sum(user['rating'] for user in users) / total_users if total_users > 0 else 0
-    avatars = get_all_avatars(users)
-    return render_template("main.html", users=users, avatars=avatars, total_users=len(users), avg_rating=10)
-
-
-@app.route('/update_name', methods=['POST'])
-def update_name():
-    data = request.get_json()
-    user_id = data['userId']
-    new_name = data['newName']
-
-    # Загружаем данные пользователей
-    users_data = load_data(DATA_FILE)
-    users = users_data['users']
-
-    # Ищем пользователя по ID и меняем имя
-    user_found = False
-    for user in users:
-        if str(user['id']) == str(user_id):
-            user['second_name'] = new_name
-            user_found = True
-            break
-
-    if user_found:
-        save_data(users_data)  # Сохраняем данные
-        return jsonify({'success': True, 'new_name': new_name})
-    else:
-        return jsonify({'success': False})
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    """Страница входа."""
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-
-        if username == VALID_USERNAME and hashed_password == VALID_PASSWORD_HASH:
-            session["logged_in"] = True
-            return redirect(url_for("index"))
-
-    return render_template("login.html")
-
-
-@app.route("/logout", methods=["POST"])
-def logout():
-    """Выход из аккаунта."""
-    session.pop("logged_in", None)
-    return redirect(url_for("login"))
-
-
-@app.route('/update_chat', methods=['POST'])
-def update_chat():
-    data = request.json  # Получаем JSON
-    if not data:
-        return jsonify({"error": "No data received"}), 400
-
-    print("📩 Новое сообщение:", data)
-
-    # ТУТ добавь код обновления страницы на твоем сайте (например, с WebSocket)
-
-    return jsonify({"status": "ok"}), 200
-
-
-def send_message(chat_id, text):
-    url = f"https://api.telegram.org/bot{BOTTOCEN}/sendMessage"
-    data = {"chat_id": chat_id, "text": text}
-    response = requests.post(url, json=data)
-    return response.json()
-
-
-def get_user_id_by_username(username):
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    for user in data.get("users", []):
-        if user.get("username") == username:
-            return user.get("id")
-
-    return None  # Если пользователя не нашли
-
-
-@app.route("/send_message", methods=["POST"])
-def send_message_route():
-    try:
-        # Получаем JSON-данные с именем пользователя и сообщением
-        data = request.get_json()
-
-        username = data.get("username")  # Имя пользователя
-        message = data.get("message")  # Сообщение
-
-        if not username or not message:
-            return jsonify({"error": "Отсутствуют данные: username или message"}), 400
-
-        # Получаем ID пользователя
-        # user_id = 1840233118#ПОЛУЧЕНИЕ АЙДИ ЧЕРЕЗ ИМЯ= app.get_users(username) НЕ РАБОТАЕТ
-        user_id = get_user_id_by_username(username)
-        if not user_id:
-            return jsonify({"error": f"Не найден пользователь с именем {username}"}), 404
-
-        # Отправляем сообщение через Telegram-бота
-        result = send_message(user_id, message)
-
-        save_message_to_json(user_id, "SupportBot", message)
-
-        return jsonify(result)
-
-    except Exception as e:
-        return jsonify({"error": f"Ошибка сервера: {str(e)}"}), 500
-
-
-def get_avatar(user_id):
-    """ Получаем аватар пользователя или дефолтное изображение. """
-    response = requests.get(f"{TELEGRAM_API_URL}getUserProfilePhotos", params={"user_id": user_id})
-    data = response.json()
-
-    if data["ok"] and data["result"]["total_count"] > 0:
-        file_id = data["result"]["photos"][0][0]["file_id"]
-        file_path = requests.get(f"{TELEGRAM_API_URL}getFile", params={"file_id": file_id}).json()["result"][
-            "file_path"]
-        return f"https://api.telegram.org/file/bot{BOTTOCEN}/{file_path}"
-
-    return "/static/DefaultAvatar.png"
-
-
-def get_all_avatars(users):
-    """ Получаем аватары для всех пользователей """
-    avatars = {}
-    for user in users:
-        avatars[user["id"]] = get_avatar(user["id"])
-    return avatars
-
-
-@app.route("/get_avatar/<int:user_id>")
-def avatar(user_id):
-    avatar_url = get_avatar(user_id)  # Функция выше
-    return jsonify({"avatar": avatar_url})
-
-
-@app.route("/users")
-def users_list():
-    chats_data = load_chats()
-
-    users = chats_data["users"]
-    avatars = get_all_avatars(users)  # Получаем аватары сразу для всех
-
-    return render_template("users.html", users=users, avatars=avatars)
-
-
-unread_messages_data = {
-    "1840233118": 2,  # У пользователя с id=1 есть 2 непрочитанных сообщения
-    "6222116355": 5,  # У пользователя с id=2 есть 5 непрочитанных сообщений
-}
-
-
-@app.route('/check_unread_messages', methods=['GET'])
-def check_unread_messages():
-    return jsonify(unread_messages_data)  # Отправляем данные в JSON-формате
-
-
-@app.route("/mark_as_read", methods=["POST"])
-def mark_as_read():
-    """Помечает конкретное сообщение как прочитанное"""
-    data = request.json
-    user_id = str(data.get("user_id"))  # ID пользователя
-    message_time_sent = data.get("time_sent")  # Время сообщения
-
-    chats_data = load_chats()
-
-    if user_id in chats_data:
-        for message in chats_data[user_id]["messages"]:
-            if message["time_sent"] == message_time_sent:
-                message["read"] = True  # Помечаем как прочитанное
-                save_chats(chats_data)
-                return jsonify({"status": "ok", "message": "Сообщение помечено как прочитанное"}), 200
-
-    return jsonify({"status": "error", "message": "Сообщение не найдено"}), 404
-
-
-def get_unread_counts():
-    with open("chats.json", "r", encoding="utf-8") as file:
-        messages = json.load(file)
-
-    unread_counts = {}
-    for msg in messages:
-        user_id = msg["user_id"]  # Используем ID пользователя
-        if not msg["read"]:
-            unread_counts[user_id] = unread_counts.get(user_id, 0) + 1
-
-    return unread_counts
-
-
-@app.route("/get_unread_counts")
-def unread_counts():
-    return jsonify(get_unread_counts())
 
 
 async def start(update: Update, context):
@@ -1599,18 +1391,22 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_info = {
                 "username": user_username,
                 "message": user_message,
-                "time_sent": current_time
+                "time_sent": current_time,
+                "read": False
             }
 
             # Добавляем сообщение в список
 
             chats_data[chat_id_str]["messages"].append(message_info)
+            if chat_id_str in chats_data:
+                chats_data[chat_id_str]["newmassages"] = chats_data[chat_id_str].get("newmassages", 0) + 1
 
             # Сохраняем обновленные данные в chats.json
             save_chats(chats_data)
 
             # Обновление информации на сайте
-            await update_website(message_info)  # Тут будет исправленный запрос (см. ниже)
+            app.update_user_list()  # Тут будет исправленный запрос (см. ниже)====================================================================================
+
 
             # Ответ пользователю
             reply = await update.message.reply_text("Ваше повідомлення надіслано адміністраторам бота.")
