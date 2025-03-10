@@ -3,7 +3,7 @@
         {
             "id": "1840233118",
             "first_name": "Artem",
-            "second_name": "Артем",
+            "second_name": "Артем223",
             "username": "ArtemKirss",
             "join_date": "17:01; 09/01/2025",
             "rating": 5,
@@ -30,7 +30,7 @@
             "join_date": "19:50; 18/01/2025",
             "rating": 5,
             "mute": false,
-            "mute_end": "None",
+            "mute_end": null,
             "reason": null
         },
         {

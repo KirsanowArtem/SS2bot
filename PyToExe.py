@@ -1,7 +1,7 @@
 import os
 
-output_name = "TgBot2_0_1.exe"  # Версия, меняем только последнее число
-python_file = "TgBot2"
+output_name = "TgBot2_0_1.exe"  # Название файла которое будет после момпеляции
+python_file = "TgBot2"  #название твоего кода но без .py
 
 
 try:

@@ -1,5 +1,7 @@
 import asyncio
 import re
+import subprocess
+import sys
 
 import aiohttp
 import config
@@ -37,9 +39,9 @@ from datetime import datetime
 from telegram.ext import Application
 
 import tkinter as tk
-from tkinter import scrolledtext, simpledialog, messagebox
+from tkinter import scrolledtext, simpledialog, messagebox, filedialog
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageGrab
 import io
 
 from tkinter import Menu
@@ -77,8 +79,6 @@ def load_data2():
         data = json.load(f)
     print(DATA_FILE)
     return {user["id"]: user for user in data["users"]}, data
-
-
 
 
 def load_chats2():
@@ -279,35 +279,7 @@ class ChatApp:
 
         # Добавление пользователей в контейнер
         for user_id, user in self.users.items():
-            user_frame = tk.Frame(self.user_list_container, bd=1, relief=tk.SOLID, padx=5, pady=5)
-            user_frame.pack(fill=tk.X, padx=5, pady=2)
-
-            avatar = get_user_avatar(user_id)
-            if avatar:
-                avatar = avatar.resize((40, 40))
-                avatar_image = ImageTk.PhotoImage(avatar)
-                avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
-                avatar_label.image = avatar_image
-                avatar_label.pack(side=tk.LEFT, padx=5)
-                if user.get("mute", False):
-                    avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
-                else:
-                    avatar_label.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
-
-            user_label = tk.Label(user_frame, text=f"{user['second_name']} ({user['username']})",
-                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
-            user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
-            user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
-
-            unread_count = self.get_unread_message_count(user_id)
-            if unread_count > 0:
-                unread_label = tk.Label(user_frame, text="🔵", bg="blue", fg="white", font=("Helvetica", 12, "bold"))
-                unread_label.pack(side=tk.RIGHT, padx=5)
-
-            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
-            edit_button.pack(side=tk.RIGHT, padx=5)
-
-            self.user_buttons[user_id] = user_frame
+            self.create_user_block(user_id, user)
 
         # Фрейм для чата
         self.chat_frame = tk.Frame(self.main_frame)
@@ -357,19 +329,113 @@ class ChatApp:
         self.chat_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.chat_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
+        # Фрейм для превью файлов (скрыт по умолчанию)
+        self.file_preview_frame = tk.Frame(self.chat_frame, bg="#f0f0f0")
+
+        # Canvas и Scrollbar для превью файлов
+        self.file_preview_canvas = tk.Canvas(self.file_preview_frame, bg="#f0f0f0", highlightthickness=0)
+        self.file_preview_scrollbar = tk.Scrollbar(self.file_preview_frame, orient=tk.VERTICAL,
+                                                   command=self.file_preview_canvas.yview)
+        self.file_preview_container = tk.Frame(self.file_preview_canvas, bg="#f0f0f0")
+
+        # Привязка контейнера к Canvas
+        self.file_preview_container.bind(
+            "<Configure>",
+            lambda e: self.file_preview_canvas.configure(scrollregion=self.file_preview_canvas.bbox("all")))
+        self.file_preview_canvas.create_window((0, 0), window=self.file_preview_container, anchor="nw")
+        self.file_preview_canvas.configure(yscrollcommand=self.file_preview_scrollbar.set)
+
+        # Привязка колесика мыши к Canvas
+        self.file_preview_canvas.bind_all("<MouseWheel>", self.on_mousewheel_file_preview)
+
+        # Размещение Canvas и Scrollbar
+        self.file_preview_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.file_preview_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
         # Поле ввода сообщения и кнопка отправки (внизу, под чатом)
         self.entry_frame = tk.Frame(self.chat_frame, bg="#f0f0f0")
         self.entry_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
 
+        # Кнопка для переключения видимости контейнера с превью
+        self.toggle_preview_button = tk.Button(
+            self.entry_frame,
+            text="📁",  # Иконка папки
+            font=("Helvetica", 12),
+            command=self.toggle_file_preview,  # Метод для переключения видимости
+        )
+        self.toggle_preview_button.pack(side=tk.LEFT, padx=5)
+
+        # Кнопка для отправки документов
+        self.send_document_button = tk.Button(
+            self.entry_frame,
+            text="📄",  # Иконка документа
+            font=("Helvetica", 12),
+            command=self.send_document,  # Метод для отправки документа
+        )
+        self.send_document_button.pack(side=tk.LEFT, padx=5)
+
         self.chat_input = tk.Text(self.entry_frame, font=("Helvetica", 12), height=3)
         self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         self.chat_input.bind("<KeyPress>", self.key_press_handler)  # Привязываем обработчик нажатий клавиш
+        self.chat_input.bind("<Control-v>", self.paste_image)  # Привязываем вставку картинки
         self.send_button = tk.Button(self.entry_frame, text="Отправить", command=self.send_message,
                                      font=("Helvetica", 12))
         self.send_button.pack(side=tk.RIGHT)
 
         self.current_user_id = None
         self.mute_end_label = None
+
+    def create_user_block(self, user_id, user):
+        """Создает блок пользователя в списке."""
+        user_frame = tk.Frame(self.user_list_container, bd=1, relief=tk.SOLID, padx=5, pady=5)
+        user_frame.pack(fill=tk.X, padx=5, pady=2)
+
+        # Аватар пользователя
+        avatar = get_user_avatar(user_id)
+        if avatar:
+            avatar = avatar.resize((40, 40))  # Возвращаем старый размер аватара
+            avatar_image = ImageTk.PhotoImage(avatar)
+            avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
+            avatar_label.image = avatar_image
+            avatar_label.pack(side=tk.LEFT, padx=5)
+            if user.get("mute", False):
+                avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+
+        # Информация о пользователе
+        user_label = tk.Label(
+            user_frame,
+            text=f"{user['second_name']} ({user['username']})",
+            font=("Helvetica", 12, "bold"),  # Возвращаем старый шрифт
+            anchor="w",
+            cursor="hand2",
+        )
+        user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
+
+        # Кнопка редактирования
+        edit_button = tk.Button(
+            user_frame,
+            text="✏️",
+            font=("Helvetica", 12),  # Возвращаем старый шрифт
+            command=lambda uid=user_id: self.edit_user_name(uid),
+        )
+        edit_button.pack(side=tk.RIGHT, padx=5)
+
+        # Количество непрочитанных сообщений (справа снизу, поверх аватара)
+        unread_count = self.get_unread_message_count(user_id)
+        if unread_count > 0:
+            unread_label = tk.Label(
+                user_frame,
+                text=f"{unread_count}",
+                font=("Helvetica", 10, "bold"),
+                bg="red",
+                fg="white",
+                bd=2,
+                relief="solid",
+            )
+            unread_label.place(relx=1.0, rely=1.0, x=-10, y=-10, anchor="se")  # Позиционируем справа снизу
+
+        self.user_buttons[user_id] = user_frame
 
     def bind_mousewheel(self, widget, handler):
         """Рекурсивно привязывает событие прокрутки ко всем дочерним элементам."""
@@ -379,20 +445,22 @@ class ChatApp:
 
     def on_mousewheel(self, event):
         """Обработчик события прокрутки колесика мыши для списка пользователей."""
-        self.user_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        if self.user_canvas.bbox("all"):  # Проверяем, есть ли что прокручивать
+            self.user_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def on_mousewheel_chat(self, event):
         """Обработчик события прокрутки колесика мыши для чата."""
-        self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        if self.chat_canvas.bbox("all"):  # Проверяем, есть ли что прокручивать
+            self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-    def update_message_width(self, message_text,height):
+    def update_message_width(self, message_text, height):
         """Обновляет ширину текстового поля в зависимости от ширины окна."""
         window_width = self.root.winfo_width()
         message_width = int((window_width - 550) / 10)  # Уменьшаем длину сообщения
         message_text.config(width=message_width)
 
         # Обновляем высоту текстового поля в зависимости от количества строк
-        message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10)+height
+        message_text_height = int(len(message_text.get("1.0", tk.END))) / int((window_width - 550) / 10) + height
         message_text.config(height=message_text_height)
 
     def update_user_info(self, user):
@@ -412,22 +480,177 @@ class ChatApp:
         self.username_label.config(text=f"@{user['username']}")
         self.user_id_label.config(text=f"ID: {user['id']}")
 
-    def send_message(self):
-        """Отправляет сообщение и обновляет чат."""
+    def paste_image(self, event=None):
+        """Вставляет картинку из буфера обмена в поле ввода."""
+        try:
+            # Получаем картинку из буфера обмена
+            image = ImageGrab.grabclipboard()
+            if image:
+                # Преобразуем картинку в формат, который можно вставить в Text
+                image = image.resize((100, 100))  # Уменьшаем размер для удобства
+                photo = ImageTk.PhotoImage(image)
+                self.chat_input.image_create(tk.END, image=photo)
+                self.chat_input.insert(tk.END, "\n")  # Добавляем перенос строки
+        except Exception as e:
+            print(f"Ошибка при вставке картинки: {e}")
+
+    def send_document(self):
+        """Открывает проводник для выбора документа и отображает его перед отправкой."""
         if not self.current_user_id:
             return
 
+        # Открываем проводник для выбора файла
+        file_path = filedialog.askopenfilename(
+            title="Выберите документ",
+            filetypes=[("Все файлы", "*.*")],  # Можно указать конкретные типы файлов
+        )
+
+        if file_path:
+            self.add_file_to_preview(file_path)
+
+    def send_photo(self):
+        """Открывает проводник для выбора картинки и отображает ее перед отправкой."""
+        if not self.current_user_id:
+            return
+
+        # Открываем проводник для выбора файла
+        file_path = filedialog.askopenfilename(
+            title="Выберите картинку",
+            filetypes=[("Все файлы", "*.*")],  # Только изображения
+        )
+
+        if file_path:
+            self.add_file_to_preview(file_path, "photo")
+
+    def send_file(self, file_path):
+        """Отправляет файл через Telegram Bot API."""
+        if not self.current_user_id:
+            return
+
+        # Определяем тип файла по его расширению
+        file_extension = file_path.split(".")[-1].lower()
+        file_type = "document"  # По умолчанию отправляем как документ
+
+        if file_extension in ["jpg", "jpeg", "png", "gif", "bmp"]:
+            file_type = "photo"  # Если это изображение, отправляем как фото
+
+        url = f"https://api.telegram.org/bot{self.bot_token}/send{file_type}"
+        files = {file_type: open(file_path, "rb")}
+        data = {"chat_id": self.current_user_id}
+
+        try:
+            response = requests.post(url, files=files, data=data)
+            response.raise_for_status()  # Проверка на ошибки HTTP
+            print(f"Файл успешно отправлен: {file_path}")
+        except requests.exceptions.HTTPError as http_err:
+            print(f"Ошибка HTTP при отправке файла: {http_err}")
+        except Exception as err:
+            print(f"Ошибка при отправке файла: {err}")
+        finally:
+            files[file_type].close()  # Закрываем файл после отправки
+
+    def send_message(self):
+        """Отправляет сообщение и все выбранные файлы."""
+        if not self.current_user_id:
+            return
+
+        # Отправляем текстовое сообщение
         message = self.chat_input.get("1.0", tk.END).strip()
         if message:
-            # Сохраняем сообщение
-            url = f"https://api.telegram.org/bot{BOTTOCEN}/sendMessage"
-            data = {"chat_id": self.current_user_id, "text": message}
-            response = requests.post(url, json=data)
-            save_message_to_json(self.current_user_id, "SupportBot", message)
+            self.send_telegram_message(self.current_user_id, message)
 
-            # Добавляем сообщение в чат
-            self.open_chat(self.current_user_id)  # Обновляем чат
-            self.chat_input.delete("1.0", tk.END)
+        # Отправляем все выбранные файлы
+        if hasattr(self, "files_to_send"):
+            for file in self.files_to_send:
+                self.send_file(file["path"])  # Передаем только путь к файлу
+            self.files_to_send = []  # Очищаем список файлов после отправки
+
+        # Очищаем поле ввода и превью файлов
+        self.chat_input.delete("1.0", tk.END)
+        for widget in self.file_preview_container.winfo_children():
+            widget.destroy()
+
+    def open_file(self, file_path):
+        """Открывает файл в соответствующей программе."""
+        try:
+            if os.name == "nt":  # Для Windows
+                os.startfile(file_path)
+            else:  # Для macOS и Linux
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, file_path])
+        except Exception as e:
+            print(f"Ошибка при открытии файла: {e}")
+
+    def add_file_to_preview(self, file_path):
+        """Добавляет файл в превью перед отправкой."""
+        file_frame = tk.Frame(self.file_preview_container, bg="#f0f0f0")
+        file_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
+
+        # Получаем расширение файла
+        file_extension = file_path.split(".")[-1].lower()
+
+        # Определяем иконку в зависимости от расширения файла
+        icon_mapping = {
+            "jpg": "🖼️",  # Иконка для изображений
+            "jpeg": "🖼️",
+            "png": "🖼️",
+            "gif": "🖼️",
+            "bmp": "🖼️",
+            "py": "🐍",  # Иконка для Python файлов
+            "exe": "⚙️",  # Иконка для исполняемых файлов
+            "docx": "📄",  # Иконка для Word документов
+            "xlsx": "📊",  # Иконка для Excel файлов
+            "txt": "📝",  # Иконка для текстовых файлов
+            "pdf": "📑",  # Иконка для PDF файлов
+        }
+
+        # Иконка по умолчанию для неизвестных типов файлов
+        file_icon = icon_mapping.get(file_extension, "📁")
+
+        # Отображаем иконку файла
+        icon_label = tk.Label(file_frame, text=file_icon, font=("Helvetica", 20), bg="#f0f0f0")
+        icon_label.pack(side=tk.LEFT, padx=5)
+
+        # Добавляем обработчик событий для открытия файла
+        icon_label.bind("<Button-1>", lambda e, path=file_path: self.open_file(path))
+
+        # Отображаем имя файла
+        file_name = file_path.split("/")[-1]  # Получаем только имя файла
+        file_label = tk.Label(file_frame, text=file_name, bg="#f0f0f0", font=("Helvetica", 10))
+        file_label.pack(side=tk.LEFT, padx=5)
+
+        # Кнопка для удаления файла
+        delete_button = tk.Button(
+            file_frame,
+            text="❌",  # Иконка крестика
+            font=("Helvetica", 10),
+            bg="#f0f0f0",
+            command=lambda: self.remove_file_from_preview(file_frame, file_path),
+        )
+        delete_button.pack(side=tk.RIGHT, padx=5)
+
+        # Сохраняем информацию о файле
+        if not hasattr(self, "files_to_send"):
+            self.files_to_send = []
+        self.files_to_send.append({"path": file_path})
+
+    def toggle_file_preview(self):
+        """Переключает видимость контейнера с превью файлов."""
+        if self.file_preview_frame.winfo_ismapped():
+            self.file_preview_frame.pack_forget()  # Скрываем контейнер
+        else:
+            self.file_preview_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=5,
+                                         pady=5)  # Показываем контейнер
+
+    def remove_file_from_preview(self, file_frame, file_path):
+        """Удаляет файл из превью."""
+        file_frame.destroy()
+        self.files_to_send = [file for file in self.files_to_send if file["path"] != file_path]
+
+    def on_mousewheel_file_preview(self, event):
+        """Обработчик события прокрутки колесика мыши для блока с файлами."""
+        if self.file_preview_canvas.bbox("all"):  # Проверяем, есть ли что прокручивать
+            self.file_preview_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def send_message_event(self, event):
         """Отправляет сообщение и обновляет чат (для привязки к событию)."""
@@ -545,7 +768,6 @@ class ChatApp:
                 self.data["muted_users"] = {}
             self.data["muted_users"][username] = True  # Добавляем запись "username": true
 
-
             self.save_data2()  # Сохраняем изменения
 
             # Отправка сообщения пользователю о мутах
@@ -631,7 +853,6 @@ class ChatApp:
             update_second_name(user_id, new_name.strip(), self.file_path)
             self.open_chat(self.current_user_id)  # Обновляем чат
 
-
     def update_second_name(user_id, new_second_name, file_path):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -653,12 +874,6 @@ class ChatApp:
 
         except Exception as e:
             print(f"Ошибка при обновлении имени пользователя: {e}")
-
-
-
-
-
-
 
     def open_chat(self, user_id):
         """Открывает чат с выбранным пользователем."""
@@ -757,8 +972,28 @@ class ChatApp:
         # Устанавливаем фокус на поле ввода сообщения
         self.chat_input.focus_set()
 
+        # Обновляем состояние кнопки Замутить/Размутить
+        self.update_mute_button()
+
+        # Обновляем цвет рамки аватара в header_frame
+        self.update_avatar_border()
+
         self.mark_all_messages_as_read(user_id)
         self.update_user_list()
+
+    def update_avatar_border(self):
+        """Обновляет цвет рамки аватара в зависимости от состояния мута."""
+        if self.current_user_id and self.users[self.current_user_id].get("mute", False):
+            self.avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
+        else:
+            self.avatar_label.config(highlightbackground="black", highlightcolor="black", highlightthickness=2)
+
+    def update_mute_button(self):
+        """Обновляет текст кнопки Замутить/Размутить."""
+        if self.current_user_id and self.users[self.current_user_id].get("mute", False):
+            self.mute_button.config(text="Размутить")
+        else:
+            self.mute_button.config(text="Замутить")
 
     def mark_all_messages_as_read(self, user_id):
         chats_data = load_chats2()
@@ -789,12 +1024,14 @@ class ChatApp:
     def update_user_list(self):
         """Обновляет список пользователей."""
         for user_id, user_frame in self.user_buttons.items():
+            # Очищаем фрейм пользователя
             for widget in user_frame.winfo_children():
                 widget.destroy()
 
+            # Аватар пользователя
             avatar = get_user_avatar(user_id)
             if avatar:
-                avatar = avatar.resize((40, 40))
+                avatar = avatar.resize((40, 40))  # Возвращаем старый размер аватара
                 avatar_image = ImageTk.PhotoImage(avatar)
                 avatar_label = tk.Label(user_frame, image=avatar_image, bd=2, relief="solid")
                 avatar_label.image = avatar_image
@@ -802,20 +1039,39 @@ class ChatApp:
                 if self.users[user_id].get("mute", False):
                     avatar_label.config(highlightbackground="red", highlightcolor="red", highlightthickness=2)
 
-            user_label = tk.Label(user_frame,
-                                  text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
-                                  font=("Helvetica", 12, "bold"), anchor="w", cursor="hand2")
+            # Информация о пользователе
+            user_label = tk.Label(
+                user_frame,
+                text=f"{self.users[user_id]['second_name']} ({self.users[user_id]['username']})",
+                font=("Helvetica", 12, "bold"),  # Возвращаем старый шрифт
+                anchor="w",
+                cursor="hand2",
+            )
             user_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
             user_label.bind("<Button-1>", lambda event, uid=user_id: self.open_chat(uid))
 
-            unread_count = self.get_unread_message_count(user_id)
-            if unread_count > 0:
-                unread_label = tk.Label(user_frame, text=f"🔵 {unread_count}", font=("Helvetica", 12, "bold"))
-                unread_label.pack(side=tk.RIGHT, padx=5)
-
-            edit_button = tk.Button(user_frame, text="✏️", command=lambda uid=user_id: self.edit_user_name(uid))
+            # Кнопка редактирования
+            edit_button = tk.Button(
+                user_frame,
+                text="✏️",
+                font=("Helvetica", 12),  # Возвращаем старый шрифт
+                command=lambda uid=user_id: self.edit_user_name(uid),
+            )
             edit_button.pack(side=tk.RIGHT, padx=5)
 
+            # Количество непрочитанных сообщений (справа снизу, поверх аватара)
+            unread_count = self.get_unread_message_count(user_id)
+            if unread_count > 0:
+                unread_label = tk.Label(
+                    user_frame,
+                    text=f"{unread_count}",
+                    font=("Helvetica", 10, "bold"),
+                    bg="red",
+                    fg="white",
+                    bd=2,
+                    relief="solid",
+                )
+                unread_label.place(relx=1.0, rely=1.0, x=-10, y=-10, anchor="se")  # Позиционируем справа снизу
 
 
 # -------------------------------------------------------------------------------------------------------------------------------
@@ -972,14 +1228,6 @@ def load_chats():
 def save_chats(chats):
     with open(CHATS_FILE, "w", encoding="utf-8") as file:
         json.dump(chats, file, ensure_ascii=False, indent=4)
-
-
-
-
-
-
-
-
 
 
 async def start(update: Update, context):
@@ -1406,7 +1654,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             # Обновление информации на сайте
             app.update_user_list()  # Тут будет исправленный запрос (см. ниже)====================================================================================
-
 
             # Ответ пользователю
             reply = await update.message.reply_text("Ваше повідомлення надіслано адміністраторам бота.")
